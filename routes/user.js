@@ -9,11 +9,20 @@ const authHandler = require("../middleware/authHandler/authHandler.js");
 
 dotenv.config();
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+// 사용자 정보
+router.get("/:userId", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
 });
 
+// 회원가입
 router.post("/sign-up", async (req, res, next) => {
   try {
     const { email, password, nickname } = req.body;
@@ -25,6 +34,7 @@ router.post("/sign-up", async (req, res, next) => {
   }
 });
 
+// 로그인
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -43,6 +53,7 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
+// 로그아웃
 router.post("/logout", authHandler, async (req, res) => {
   res.clearCookie("authToken");
   res.status(200).send({ success: true, message: "Logout Success" });
