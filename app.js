@@ -5,7 +5,6 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 const stockRouter = require("./routes/stockPrice");
 let cors = require("cors");
 const mongoose = require("mongoose");
@@ -39,7 +38,9 @@ app.use("/api/kospiCode", kospiCodeRouter);
 
 const kosdaqCodeRouter = require("./routes/kosdaqCode");
 app.use("/api/kosdaqCode", kosdaqCodeRouter);
-app.use("/api/users", usersRouter);
+
+var userRouter = require("./routes/user");
+app.use("/api/user", userRouter);
 app.use("/api/stock", stockRouter);
 
 const userStockRouter = require("./routes/userStock");
@@ -48,11 +49,17 @@ app.use("/api/userStock", userStockRouter);
 const feedRouter = require("./routes/feed");
 app.use("/api/feed", feedRouter);
 
-const stockPriceRouter = require('./routes/stockPrice');
-app.use('/api/stockPrice', stockPriceRouter);
+const commentRouter = require("./routes/comment");
+app.use("/api/comment", commentRouter);
 
-const subChartRouter = require('./routes/subChart');
-app.use('/api/subChart', subChartRouter);
+const stockPriceRouter = require("./routes/stockPrice");
+app.use("/api/stockPrice", stockPriceRouter);
+
+const subChartRouter = require("./routes/subChart");
+app.use("/api/subChart", subChartRouter);
+
+const friendRouter = require("./routes/friend");
+app.use("/api/friend", friendRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
