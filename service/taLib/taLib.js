@@ -70,7 +70,7 @@ function BBANDS(stockData, lineTime, stdev){    //stdev : 표준편차 배수
     return result;
 }
 
-function SAR(stockData, opt, optMax){
+function SAR(stockData, acc, accMax){
     const marketData = processData(stockData);
     var indicatorParams = {
         name: "SAR",
@@ -78,8 +78,8 @@ function SAR(stockData, opt, optMax){
         endIdx: marketData.close.length - 1,
         high: marketData.high,
         low: marketData.low,
-        optInAcceleration: opt,
-        optInMaximum: optMax      
+        optInAcceleration: acc,
+        optInMaximum: accMax      
     };
     const result = talib.execute(indicatorParams);
     return result;
@@ -100,7 +100,7 @@ function MACD(stockData, shortPeriod, longPeriod, signalPeriod){
     return result;
 }
 
-function STOCHF(stockData, K, D){
+function STOCHF(stockData, period_K, period_D){
     const marketData = processData(stockData);
     var indicatorParams = {
         name: "STOCHF",
@@ -109,8 +109,8 @@ function STOCHF(stockData, K, D){
         high: marketData.high,
         low: marketData.low,
         close: marketData.close,
-        optInFastK_Period: K, // 기간K
-        optInFastD_Period: D, // 기간D
+        optInFastK_Period: period_K, // 기간K
+        optInFastD_Period: period_D, // 기간D
         optInFastD_MAType: 0, // Type of Moving Average for Fast-D
     };
     
@@ -118,7 +118,7 @@ function STOCHF(stockData, K, D){
     return result;
 }
 
-function STOCH(stockData, Date, K, D){
+function STOCH(stockData, Date, period_K, period_D){
     const marketData = processData(stockData);
     var indicatorParams = {
         name: "STOCH",
@@ -128,8 +128,8 @@ function STOCH(stockData, Date, K, D){
         low: marketData.low,
         close: marketData.close,
         optInFastK_Period: Date, // 기간
-        optInSlowK_Period: K, // 기간K
-        optInSlowD_Period: D, // 기간D
+        optInSlowK_Period: period_K, // 기간K
+        optInSlowD_Period: period_D, // 기간D
         optInSlowK_MAType: 0, // Type of Moving Average for Slow-K
         optInSlowD_MAType: 0, // Type of Moving Average for Slow-D
     };
@@ -371,7 +371,7 @@ function AROONOSC(stockData, Date){
     return result;
 }
 
-function STOCHRSI(stockData, Date, K, D){
+function STOCHRSI(stockData, Date, period_K, period_D){
     const marketData = processData(stockData);
     var indicatorParams = {
         name: "STOCHRSI",
@@ -379,8 +379,8 @@ function STOCHRSI(stockData, Date, K, D){
         endIdx: marketData.close.length - 1,
         inReal: marketData.close, // 분석하려는 가격 데이터를 넣는데 보통 종가를 넣는대
         optInTimePeriod : Date,
-        optInFastK_Period: K, // 기간K
-        optInFastD_Period: D, // 기간D
+        optInFastK_Period: period_K, // 기간K
+        optInFastD_Period: period_D, // 기간D
         optInFastD_MAType: 0,
     };
     const result = talib.execute(indicatorParams);
