@@ -9,7 +9,7 @@ async function processStockPrice(time_format, code, start_date, end_date){
         tr_id: "FHKST03010100",
     };
     const response = await axios.get(   // 한투 api 에서 봉 조회.
-      `${process.env.VTS}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?fid_cond_mrkt_div_code=J&fid_input_iscd=${code}&fid_input_date_1=${start_date}&fid_input_date_2=${end_date}&fid_period_div_code=${time_format}&fid_org_adj_prc=1`
+      `${process.env.VTS}/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?fid_cond_mrkt_div_code=J&fid_input_iscd=${code}&fid_input_date_1=${start_date}&fid_input_date_2=${end_date}&fid_period_div_code=${time_format}&fid_org_adj_prc=0`
       ,{ headers});
 
     const priceArray = response.data.output2;
