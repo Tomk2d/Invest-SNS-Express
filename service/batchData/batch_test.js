@@ -1,9 +1,5 @@
-const cron = require('node-cron');
+const axios = require('axios');
 
-function a (){
-    cron.schedule(`1 * * * * *`, async ()=>{        // 매분 01 초에 시행
-        console.log('hi');
-    });
+async function getData(){
+    
 }
-
-a();
