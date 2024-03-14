@@ -43,9 +43,6 @@ var userRouter = require("./routes/user");
 app.use("/api/user", userRouter);
 app.use("/api/stock", stockRouter);
 
-const userStockRouter = require("./routes/userStock");
-app.use("/api/userStock", userStockRouter);
-
 const feedRouter = require("./routes/feed");
 app.use("/api/feed", feedRouter);
 
@@ -61,22 +58,24 @@ app.use("/api/subChart", subChartRouter);
 const friendRouter = require("./routes/friend");
 app.use("/api/friend", friendRouter);
 
-const stockCodeRouter = require('./routes/stockCode');
-app.use('/api/stockCode', stockCodeRouter);
+const stockCodeRouter = require("./routes/stockCode");
+app.use("/api/stockCode", stockCodeRouter);
 
+const popularSotckRouter = require("./routes/popularStock");
+app.use("/api/popularStock", popularSotckRouter);
 
 // 배치 작업 시행
-const cron = require('node-cron');
-const { exec } = require('child_process');
+const cron = require("node-cron");
+const { exec } = require("child_process");
 // 매일 5시 10분에 배치 작업을 실행합니다.
-cron.schedule('10 5 * * *', () => {
-    exec('node batchScript.js', (err, stdout, stderr) => {
-        if (err) {
-            console.error('배치 작업 실행 중 오류가 발생했습니다:', err);
-            return;
-        }
-        console.log('배치 작업이 성공적으로 실행되었습니다:', stdout);
-    });
+cron.schedule("10 5 * * *", () => {
+  exec("node batchScript.js", (err, stdout, stderr) => {
+    if (err) {
+      console.error("배치 작업 실행 중 오류가 발생했습니다:", err);
+      return;
+    }
+    console.log("배치 작업이 성공적으로 실행되었습니다:", stdout);
+  });
 });
 
 // catch 404 and forward to error handler
