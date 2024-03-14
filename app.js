@@ -67,16 +67,12 @@ app.use('/api/stockCode', stockCodeRouter);
 
 // 배치 작업 시행
 const cron = require('node-cron');
-const { exec } = require('child_process');
+const getMinuteData = require('./service/batchData/batch_DB')
+
 // 매일 5시 10분에 배치 작업을 실행합니다.
-cron.schedule('10 5 * * *', () => {
-    exec('node batchScript.js', (err, stdout, stderr) => {
-        if (err) {
-            console.error('배치 작업 실행 중 오류가 발생했습니다:', err);
-            return;
-        }
-        console.log('배치 작업이 성공적으로 실행되었습니다:', stdout);
-    });
+cron.schedule('25 13 * * *', () => {
+    let result = getMinuteData();
+    console.log(result);
 });
 
 // catch 404 and forward to error handler
