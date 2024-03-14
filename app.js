@@ -43,9 +43,6 @@ var userRouter = require("./routes/user");
 app.use("/api/user", userRouter);
 app.use("/api/stock", stockRouter);
 
-const userStockRouter = require("./routes/userStock");
-app.use("/api/userStock", userStockRouter);
-
 const feedRouter = require("./routes/feed");
 app.use("/api/feed", feedRouter);
 
@@ -61,9 +58,11 @@ app.use("/api/subChart", subChartRouter);
 const friendRouter = require("./routes/friend");
 app.use("/api/friend", friendRouter);
 
-const stockCodeRouter = require('./routes/stockCode');
-app.use('/api/stockCode', stockCodeRouter);
+const stockCodeRouter = require("./routes/stockCode");
+app.use("/api/stockCode", stockCodeRouter);
 
+const popularSotckRouter = require("./routes/popularStock");
+app.use("/api/popularStock", popularSotckRouter);
 
 // 배치 작업 시행
 const cron = require('node-cron');
