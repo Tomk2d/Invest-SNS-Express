@@ -1,7 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const fs = require('fs');
-const StockCode = require('../model/stockCode');
+const fs = require("fs");
+const StockCode = require("../model/StockCode");
+const authHandler = require("../middleware/authHandler/authHandler.js");
+const {
+  search,
+  userSearch,
+  addLikeStock,
+} = require("../service/stockCode/stockCode.js");
 
 router.get("/", (req, res, next) => {
   StockCode.find()
@@ -14,13 +20,14 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  const jsonFilePath = '/Users/shin-uijin/Invest SNS/Invest-SNS-Express/data/kosdaq.json'; // JSON 파일 경로에 맞게 수정.
+  const jsonFilePath =
+    "/Users/shin-uijin/Invest SNS/Invest-SNS-Express/data/kosdaq.json"; // JSON 파일 경로에 맞게 수정.
 
   // JSON 파일 읽기
-  fs.readFile(jsonFilePath, 'utf8', (err, data) => {
+  fs.readFile(jsonFilePath, "utf8", (err, data) => {
     if (err) {
-      console.error('JSON 파일을 읽는 중 오류가 발생했습니다:', err);
-      return res.status(500).json({ message: 'Internal Server Error' });
+      console.error("JSON 파일을 읽는 중 오류가 발생했습니다:", err);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
 
     try {
@@ -30,18 +37,65 @@ router.post("/", (req, res, next) => {
       // MongoDB에 데이터 삽입
       StockCode.insertMany(jsonData)
         .then((docs) => {
-          console.log('데이터베이스에 성공적으로 데이터를 삽입했습니다:', docs);
+          console.log("데이터베이스에 성공적으로 데이터를 삽입했습니다:", docs);
           res.json(docs);
         })
         .catch((err) => {
-          console.error('데이터베이스에 데이터를 삽입하는 중 오류가 발생했습니다:', err);
-          res.status(500).json({ message: 'Internal Server Error' });
+          console.error(
+            "데이터베이스에 데이터를 삽입하는 중 오류가 발생했습니다:",
+            err
+          );
+          res.status(500).json({ message: "Internal Server Error" });
         });
     } catch (parseError) {
-      console.error('JSON 파싱 중 오류가 발생했습니다:', parseError);
-      res.status(400).json({ message: 'Invalid JSON format' });
+      console.error("JSON 파싱 중 오류가 발생했습니다:", parseError);
+      res.status(400).json({ message: "Invalid JSON format" });
     }
   });
+});
+
+// 로그인 안한 사용자 검색
+router.post("/search", async (req, res, next) => {
+  try {
+    const { searchQuery } = req.body;
+
+    const searchData = await search(searchQuery);
+
+    res.json(searchData);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 로그인 한 사용자 검색
+router.post("/userSearch", authHandler, async (req, res, next) => {
+  try {
+    const { searchQuery } = req.body;
+    const userId = req.user.id;
+
+    const searchData = await userSearch(searchQuery, userId);
+
+    res.json(searchData);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 관심 종목 추가
+router.post("/likeStock", authHandler, async (req, res, next) => {
+  try {
+    const { likeStock } = req.body;
+    const userId = req.user.id;
+
+    const likedStock = await addLikeStock(likeStock, userId);
+
+    res.json(likedStock);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
 });
 
 module.exports = router;
