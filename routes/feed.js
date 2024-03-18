@@ -4,6 +4,7 @@ const Feed = require("../model/Feed.js");
 const User = require("../model/User.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const formatDate = require("../util/dateFormat/dateFormat.js");
+const moment = require("moment");
 
 // 피드 작성
 router.post("/", authHandler, async (req, res, next) => {
@@ -60,6 +61,8 @@ router.get("/", authHandler, async (req, res, next) => {
     const formattedFeeds = feeds.map((feed) => ({
       ...feed._doc,
       createdAt: formatDate(feed.createdAt),
+      isLike: feed.like.includes(userId),
+      like: feed.like.length,
     }));
 
     res.status(200).json(formattedFeeds);
@@ -70,9 +73,10 @@ router.get("/", authHandler, async (req, res, next) => {
 });
 
 // 해당 피드 가져오기
-router.get("/:feedId", async (req, res, next) => {
+router.get("/:feedId", authHandler, async (req, res, next) => {
   try {
     const feedId = req.params.feedId;
+    const userId = req.user.id;
 
     const feed = await Feed.findById(feedId).populate({
       path: "user",
@@ -82,6 +86,8 @@ router.get("/:feedId", async (req, res, next) => {
     const formattedFeeds = {
       ...feed._doc,
       createdAt: formatDate(feed.createdAt),
+      isLike: feed.like.includes(userId),
+      like: feed.like.length,
     };
 
     res.status(200).json(formattedFeeds);
@@ -92,9 +98,10 @@ router.get("/:feedId", async (req, res, next) => {
 });
 
 // 사용자 피드 가져오기
-router.get("/user/:userId", async (req, res, next) => {
+router.get("/user/:userId", authHandler, async (req, res, next) => {
   try {
     const userId = req.params.userId;
+    const currentUserId = req.user.id;
 
     const feeds = await Feed.find({ user: userId }).populate({
       path: "user",
@@ -104,9 +111,30 @@ router.get("/user/:userId", async (req, res, next) => {
     const formattedFeeds = feeds.map((feed) => ({
       ...feed._doc,
       createdAt: formatDate(feed.createdAt),
+      isLike: feed.like.includes(currentUserId),
+      like: feed.like.length,
     }));
 
     res.status(200).json(formattedFeeds);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+//좋아요
+router.post("/:feedId/like", authHandler, async (req, res, next) => {
+  try {
+    const feedId = req.params.feedId;
+    const userId = req.user.id;
+
+    const likedFeed = await Feed.findByIdAndUpdate(
+      feedId,
+      { $addToSet: { like: userId } },
+      { new: true }
+    );
+
+    res.status(200).json(likedFeed);
   } catch (err) {
     console.error(err);
     return next(err);

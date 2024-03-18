@@ -12,7 +12,7 @@ const feedSchema = new mongoose.Schema(
       no: { type: Number, default: 0 },
     },
     body: String,
-    like: { type: Number, default: 0 },
+    like: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     photoUrl: { type: String, default: null },
   },
   { timestamps: true }

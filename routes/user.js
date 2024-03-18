@@ -44,6 +44,7 @@ router.post("/login", async (req, res, next) => {
       maxAge: loginInfo.maxAge,
       // secure: true // if https
     });
+
     loginInfo.user.token = loginInfo.accessToken;
     res.status(201).json(loginInfo.user);
   } catch (err) {

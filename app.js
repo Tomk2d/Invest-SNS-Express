@@ -61,8 +61,8 @@ app.use("/api/friend", friendRouter);
 const stockCodeRouter = require("./routes/stockCode");
 app.use("/api/stockCode", stockCodeRouter);
 
-const popularSotckRouter = require("./routes/popularStock");
-app.use("/api/popularStock", popularSotckRouter);
+const shinhanInfokRouter = require("./routes/shinhanInfo");
+app.use("/api/shinhanInfo", shinhanInfokRouter);
 
 // 배치 작업 시행
 const cron = require('node-cron');
