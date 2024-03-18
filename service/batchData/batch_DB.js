@@ -1,6 +1,6 @@
 const axios = require('axios');
 const processStockPrice = require('../stock/processStockPrice.js');
-const StockCode = require('../../model/stockCode.js');
+const StockCode = require('../../model/StockCode.js');
 
 
 async function getDayData(){
