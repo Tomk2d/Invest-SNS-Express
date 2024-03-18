@@ -18,7 +18,6 @@ mongoose.connect(MONGO_HOST, {
 });
 
 var app = express();
-//
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -64,12 +63,14 @@ app.use("/api/stockCode", stockCodeRouter);
 const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
-
+const webSocketRouter = require("./routes/webSocket");
+app.use("/api/webSocket", webSocketRouter);
 
 // 배치 작업 시행
 const cron = require('node-cron');
 const {getMinuteData, getDayData} = require('./service/batchData/batch_DB')
 const getToken = require('./service/verify/hantuToken');
+const { Http2ServerRequest } = require("http2");
 
 /*
 // 토큰 자동 업데이트(시간 8:10)

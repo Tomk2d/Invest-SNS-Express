@@ -12,7 +12,7 @@ async function getToken(){
     const token = response.data.access_token;
     console.log(token);
 
-    const envPath = path.join(__dirname, '../../.env');
+    const envPath = path.join(__dirname, '../../env');
     fs.readFile(envPath, 'utf8', function (err, data) {
       if (err) {
         return console.log(err);
