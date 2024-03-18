@@ -79,8 +79,8 @@ cron.schedule('10 8 * * *',()=>{
 */
 
 // 최초 1회 일 가격 업데이트.
-let resultArray = getDayData();
-console.log(resultArray);
+//let resultArray = getDayData();
+//console.log(resultArray);
 
 
 // catch 404 and forward to error handler
