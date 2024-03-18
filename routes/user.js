@@ -47,6 +47,8 @@ router.post("/login", async (req, res, next) => {
       // secure: true // if https
     });
 
+    loginInfo.user.token = loginInfo.accessToken;
+
     res.status(201).json(loginInfo.user);
   } catch (err) {
     return res.status(401).json({ error: err.message });

@@ -59,6 +59,10 @@ router.post("/search", async (req, res, next) => {
   try {
     const { searchQuery } = req.body;
 
+    if (searchQuery === "") {
+      return res.json([]);
+    }
+
     const searchData = await search(searchQuery);
 
     res.json(searchData);
@@ -73,6 +77,10 @@ router.post("/userSearch", authHandler, async (req, res, next) => {
   try {
     const { searchQuery } = req.body;
     const userId = req.user.id;
+
+    if (searchQuery === "") {
+      return res.json([]);
+    }
 
     const searchData = await userSearch(searchQuery, userId);
 
