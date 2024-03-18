@@ -64,15 +64,24 @@ app.use("/api/stockCode", stockCodeRouter);
 const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
+
+
 // 배치 작업 시행
 const cron = require('node-cron');
-const getMinuteData = require('./service/batchData/batch_DB')
+const {getMinuteData, getDayData} = require('./service/batchData/batch_DB')
+const getToken = require('./service/verify/hantuToken');
 
-// 매일 5시 10분에 배치 작업을 실행합니다.
-cron.schedule('25 13 * * *', () => {
-    let result = getMinuteData();
-    console.log(result);
-});
+/*
+// 토큰 자동 업데이트(시간 8:10)
+cron.schedule('10 8 * * *',()=>{
+  getToken();
+})
+*/
+
+// 최초 1회 일 가격 업데이트.
+let resultArray = getDayData();
+console.log(resultArray);
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

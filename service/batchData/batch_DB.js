@@ -1,27 +1,67 @@
 const axios = require('axios');
 const processStockPrice = require('../stock/processStockPrice.js');
 const StockCode = require('../../model/StockCode.js');
+const fs = require('fs'); // fs 모듈의 프로미스 버전을 사용
 
 
-async function getDayData(){
+// 어제꺼 일 데이터 업데이트
+async function getDayData() {
     try {
         const stocks = await StockCode.find(); // StockCode 검색
-        
         const codeArray = stocks.map(stock => stock.code); // 코드 배열 생성
 
         const today = new Date();
-        const start_date = today.toISOString().slice(0, 10).replace(/-/g, '');  // 현재 날짜를 YYYYMMDD 형식으로 변환
+        const utc = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+        let kst = new Date(utc.setHours(utc.getHours() + 9));
+
+        const start_date = kst.toISOString().slice(0, 10).replace(/-/g, ''); // 현재 날짜를 YYYYMMDD 형식으로 변환
         const end_date = start_date;
 
+        // 1초에 최대 5개의 요청을 처리하는 로직
+        const maxRequests = 5;
+        let requestCounter = 0;
+        let requestGroupCounter = 0;
+        let fileCount= 1;
 
-        let result = await processStockPrice('D', '005930', start_date, end_date);
-        console.log(result);
+        let resultArray = []
+        let result = null
 
+        for (let i=0;i<codeArray.length;i++) {
+            // 1초에 5개 이상의 요청이 발생하지 않도록 제어
+            if (requestCounter >= maxRequests) {
+                await new Promise(resolve => setTimeout(resolve, 2000)); // 1.5초 대기
+                requestCounter = 0; // 카운터 초기화
+            }
+        
+            result = await processStockPrice('D', codeArray[i], start_date, end_date);
+            resultArray.push(result[0]);
 
-    } catch(err) {
+            console.log(result);
+
+            // 100개 하고 1분 쉬기
+            if (requestGroupCounter >= 99) { // 0부터 시작하므로 399가 400번째 요청
+                fs.writeFile(`/Users/shin-uijin/InvestSNS/Invest-SNS-Express/service/batchData/DayData/DayPrice${start_date}-${fileCount}.json`, JSON.stringify(resultArray, null, 2), 'utf8', (err) => {
+                    if (err) throw err;
+                    console.log('The file has been saved!');
+                });
+                await new Promise(resolve2 => setTimeout(resolve2, 60000)); // 1분 쉬기
+
+                requestGroupCounter = 0;
+                fileCount++;
+                resultArray = [];
+            } else {
+                requestGroupCounter++;
+            }
+            requestCounter++; 
+        }
+
+        return resultArray;
+
+    } catch (err) {
         console.error(err);
-    } 
+    }
 }
+
 
 async function getMinuteData(code){
     const headers = {       // 인증키 관련.

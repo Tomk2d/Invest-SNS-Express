@@ -23,7 +23,7 @@ const jsonResult = lines.map(line => {
 }).filter(Boolean); // 빈 결과를 필터링
 
 // JSON 객체를 파일로 저장
-fs.writeFile('/Users/shin-uijin/Invest SNS/Invest-SNS-Express/data/kospi.json', JSON.stringify(jsonResult, null, 2), 'utf8', (err) => {
+fs.writeFile('/Users/shin-uijin/InvestSNS/Invest-SNS-Express/data/kospi.json', JSON.stringify(jsonResult, null, 2), 'utf8', (err) => {
   if (err) throw err;
   console.log('The file has been saved!');
 });
