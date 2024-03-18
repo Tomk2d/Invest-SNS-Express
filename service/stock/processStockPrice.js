@@ -15,6 +15,7 @@ async function processStockPrice(time_format, code, start_date, end_date){
     const priceArray = response.data.output2;
     const result = priceArray.map((price) =>{
         return {
+            code : code,
             open : Number(price.stck_oprc),
             close : Number(price.stck_clpr),
             high : Number(price.stck_hgpr),
