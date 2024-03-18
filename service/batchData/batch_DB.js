@@ -3,6 +3,7 @@ const processStockPrice = require('../stock/processStockPrice.js');
 const StockCode = require('../../model/StockCode.js');
 const fs = require('fs'); // fs 모듈의 프로미스 버전을 사용
 
+
 // 어제꺼 일 데이터 업데이트
 async function getDayData() {
     try {

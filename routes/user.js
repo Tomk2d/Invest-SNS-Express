@@ -38,15 +38,14 @@ router.post("/sign-up", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     const loginInfo = await login(email, password);
-
     res.cookie("authToken", loginInfo.accessToken, {
       httpOnly: true,
       maxAge: loginInfo.maxAge,
       // secure: true // if https
     });
 
+    loginInfo.user.token = loginInfo.accessToken;
     res.status(201).json(loginInfo.user);
   } catch (err) {
     return res.status(401).json({ error: err.message });

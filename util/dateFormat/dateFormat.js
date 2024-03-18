@@ -3,11 +3,16 @@ const formatDate = (dateString) => {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-    timeZone: "UTC",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Seoul",
   };
+
   const formattedDate = new Date(dateString)
-    .toLocaleDateString("en-US", options)
-    .replace(/(\d+)\/(\d+)\/(\d+)/, "$3.$1.$2");
+    .toLocaleString("ko-KR", options)
+    .replace(/\. /g, ".");
+
   return formattedDate;
 };
 
