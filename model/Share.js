@@ -8,11 +8,13 @@ const shareSchema = new mongoose.Schema(
     },
     ownedShare: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Stock",
+      ref: "StockCode",
     },
-    price: Number,
-    quantity: Number,
-    orderType: String,
+    currentPrice: Number, //현재가
+    averagePurchasePrice: Number, //평단가
+    holdingQuantity: Number, //보유수량
+    evaluationProfit: Number, //평가수익금
+    evaluationProfitRate: Number, //평가수익률
   },
   { timestamps: true }
 );
