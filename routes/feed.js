@@ -6,15 +6,13 @@ const authHandler = require("../middleware/authHandler/authHandler.js");
 const formatDate = require("../util/dateFormat/dateFormat.js");
 const moment = require("moment");
 
-// 피드 작성
+// 글 피드 작성
 router.post("/", authHandler, async (req, res, next) => {
   try {
-    const { isVote, vote, body, photoUrl } = req.body;
+    const { body, photoUrl } = req.body;
     const userId = req.user.id;
 
     const newFeed = new Feed({
-      isVote,
-      vote,
       body,
       photoUrl,
       user: userId,
@@ -22,12 +20,94 @@ router.post("/", authHandler, async (req, res, next) => {
 
     const savedFeed = await newFeed.save();
 
-    const populatedFeed = await Feed.findById(savedFeed._id).populate(
-      "user",
-      "nickname"
-    );
+    res.status(200).json(savedFeed);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
 
-    res.status(200).json(populatedFeed);
+// 투표 피드 작성
+router.post("/vote", authHandler, async (req, res, next) => {
+  try {
+    const { body } = req.body;
+    const userId = req.user.id;
+
+    const newFeed = new Feed({
+      isVote: true,
+      body,
+      user: userId,
+    });
+
+    const savedFeed = await newFeed.save();
+
+    res.status(200).json(savedFeed);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 투표 피드 작성
+router.post("/voted", authHandler, async (req, res, next) => {
+  try {
+    const { feedId, voteResult } = req.body;
+    const userId = req.user.id;
+
+    const feed = await Feed.findById(feedId);
+    feed.myVote.push(userId);
+
+    if (voteResult === "yes") {
+      feed.vote.yes++;
+    } else if (voteResult == "no") {
+      feed.vote.no++;
+    }
+
+    const savedFeed = await feed.save();
+
+    res.status(200).json(savedFeed);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 매도/매수 피드 작성
+router.post("/order", authHandler, async (req, res, next) => {
+  try {
+    const { orderId } = req.body;
+    const userId = req.user.id;
+
+    const newFeed = new Feed({
+      isOrder: true,
+      order: orderId,
+      user: userId,
+    });
+
+    const savedFeed = await newFeed.save();
+
+    res.status(200).json(savedFeed);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 수익률 피드 작성
+router.post("/profit", authHandler, async (req, res, next) => {
+  try {
+    const { profit } = req.body;
+    const userId = req.user.id;
+
+    const newFeed = new Feed({
+      isProfit: true,
+      profit,
+      user: userId,
+    });
+
+    const savedFeed = await newFeed.save();
+
+    res.status(200).json(savedFeed);
   } catch (err) {
     console.error(err);
     return next(err);
@@ -60,9 +140,10 @@ router.get("/", authHandler, async (req, res, next) => {
 
     const formattedFeeds = feeds.map((feed) => ({
       ...feed._doc,
-      createdAt: formatDate(feed.createdAt),
-      isLike: feed.like.includes(userId),
-      like: feed.like.length,
+      createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
+      isLike: feed.like.includes(userId), // 내가 좋아요를 눌렀는지
+      like: feed.like.length, // 좋아요 개수
+      myVote: feed.myVote.includes(userId), // 내가 투표했는지
     }));
 
     res.status(200).json(formattedFeeds);
@@ -85,9 +166,10 @@ router.get("/:feedId", authHandler, async (req, res, next) => {
 
     const formattedFeeds = {
       ...feed._doc,
-      createdAt: formatDate(feed.createdAt),
+      createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
       isLike: feed.like.includes(userId),
       like: feed.like.length,
+      myVote: feed.myVote.includes(userId), // 내가 투표했는지
     };
 
     res.status(200).json(formattedFeeds);
@@ -110,9 +192,10 @@ router.get("/user/:userId", authHandler, async (req, res, next) => {
 
     const formattedFeeds = feeds.map((feed) => ({
       ...feed._doc,
-      createdAt: formatDate(feed.createdAt),
+      createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
       isLike: feed.like.includes(currentUserId),
       like: feed.like.length,
+      myVote: feed.myVote.includes(userId), // 내가 투표했는지
     }));
 
     res.status(200).json(formattedFeeds);
@@ -135,6 +218,23 @@ router.post("/:feedId/like", authHandler, async (req, res, next) => {
     );
 
     res.status(200).json(likedFeed);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+//좋아요 삭제
+router.post("/:feedId/unlike", authHandler, async (req, res, next) => {
+  try {
+    const feedId = req.params.feedId;
+    const userId = req.user.id;
+
+    const feed = await Feed.findById(feedId);
+    feed.like = feed.like.filter((id) => id.toString() !== userId);
+    const updatedFeed = await feed.save();
+
+    res.status(200).json(updatedFeed);
   } catch (err) {
     console.error(err);
     return next(err);
