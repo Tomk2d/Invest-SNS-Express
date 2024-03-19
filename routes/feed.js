@@ -48,7 +48,7 @@ router.post("/vote", authHandler, async (req, res, next) => {
   }
 });
 
-// 투표 피드 작성
+// 투표 반영
 router.post("/voted", authHandler, async (req, res, next) => {
   try {
     const { feedId, voteResult } = req.body;
