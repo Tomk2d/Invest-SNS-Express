@@ -1,7 +1,7 @@
 const axios = require('axios');
 const processStockPrice = require('../stock/processStockPrice.js');
 const StockCode = require('../../model/StockCode.js');
-const fs = require('fs'); // fs 모듈의 프로미스 버전을 사용
+const fs = require('fs');
 
 
 // 어제꺼 일 데이터 업데이트
@@ -14,8 +14,8 @@ async function getDayData() {
         const utc = new Date(today.getTime() - (24 * 60 * 60 * 1000));
         let kst = new Date(utc.setHours(utc.getHours() + 9));
 
-        const start_date = kst.toISOString().slice(0, 10).replace(/-/g, ''); // 현재 날짜를 YYYYMMDD 형식으로 변환
-        const end_date = start_date;
+        const start_date = '19000101'
+        const end_date = kst.toISOString().slice(0, 10).replace(/-/g, ''); // 현재 날짜를 YYYYMMDD 형식으로 변환
 
         // 1초에 최대 5개의 요청을 처리하는 로직
         const maxRequests = 5;
@@ -34,9 +34,11 @@ async function getDayData() {
             }
         
             result = await processStockPrice('D', codeArray[i], start_date, end_date);
+            let timestamp = new Date(Date.parse(result[0].date.slice(0, 4) + "-" + result[0].date.slice(4, 6) + "-" + result[0].date.slice(6, 8)));
+            console.log(timestamp);
             resultArray.push(result[0]);
 
-            console.log(result);
+            //console.log(result);
 
             // 100개 하고 1분 쉬기
             if (requestGroupCounter >= 99) { // 0부터 시작하므로 399가 400번째 요청
