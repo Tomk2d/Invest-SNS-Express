@@ -63,8 +63,10 @@ app.use("/api/stockCode", stockCodeRouter);
 const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
-const webSocketRouter = require("./routes/webSocket");
-app.use("/api/webSocket", webSocketRouter);
+
+const askPriceRouter = require('./routes/askPrice');
+app.use("/api/askPrice", askPriceRouter);
+
 
 // 배치 작업 시행
 const cron = require('node-cron');
@@ -99,5 +101,6 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
 
 module.exports = app;

@@ -1,12 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const { webSocketConnect, webSocketClose, webSocketEmitter } = require('../service/webSocket/webSocketConnect');
+const {askPriceConnect, askPriceClose, webSocketEmitter} = require('../service/webSocket/askPrice')
 
 router.post("/", async (req, res) => {
     try {
-        await webSocketClose(); // 기존 연결 종료
-        webSocketConnect(req.body.code);
-        webSocketEmitter.on('newData', (data) => {
+        await askPriceClose(); // 기존 연결 종료
+        askPriceConnect(req.body.code);
+        webSocketEmitter.on('newData2', (data) => {
             console.log(data);
         });
     } catch (error) {
