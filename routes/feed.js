@@ -5,34 +5,91 @@ const User = require("../model/User.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const formatDate = require("../util/dateFormat/dateFormat.js");
 const moment = require("moment");
+const path = require("path");
+
+// const bodyParser = require("body-parser");
+const multer = require("multer");
+
+// 이미지 파일을 저장할 디렉토리 설정
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "data/uploads/"); // 파일을 저장할 디렉토리 지정
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, uniqueSuffix + ext);
+  },
+});
+
+// 업로드된 파일 필터링 (이미지 파일만 허용)
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) {
+    cb(null, true); // 이미지 파일인 경우 허용
+  } else {
+    cb(new Error("Only image files are allowed!"), false); // 이미지 파일이 아닌 경우 거부
+  }
+};
+
+// multer 미들웨어 생성
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // 글 피드 작성
-router.post("/", authHandler, async (req, res, next) => {
-  try {
-    const { body, photoUrl } = req.body;
-    const userId = req.user.id;
+router.post(
+  "/",
+  authHandler,
+  upload.single("file"), // "photo" 필드에 단일 파일 업로드를 처리하는 multer 미들웨어
+  async (req, res, next) => {
+    try {
+      console.log(JSON.stringify(req.body));
+      const body = req.body.body;
+      const userId = req.user.id;
+      const photoUrl = req.file ? req.file.path : null; // 이미지 파일이 전송되었을 때만 URL 저장
+      console.log(req.file);
+      console.log(req.body.body);
+      const newFeed = new Feed({
+        body,
+        photoUrl,
+        user: userId,
+      });
 
-    const newFeed = new Feed({
-      body,
-      photoUrl,
-      user: userId,
-    });
+      const savedFeed = await newFeed.save();
 
-    const savedFeed = await newFeed.save();
-
-    res.status(200).json(savedFeed);
-  } catch (err) {
-    console.error(err);
-    return next(err);
+      res.status(200).json(savedFeed);
+    } catch (err) {
+      console.error(err);
+      return next(err);
+    }
   }
-});
+);
+
+// 글 피드 작성
+// router.post("/", authHandler, async (req, res, next) => {
+//   try {
+//     const { body, photoUrl } = req.body;
+//     const userId = req.user.id;
+
+//     const newFeed = new Feed({
+//       body,
+//       photoUrl,
+//       user: userId,
+//     });
+
+//     const savedFeed = await newFeed.save();
+
+//     res.status(200).json(savedFeed);
+//   } catch (err) {
+//     console.error(err);
+//     return next(err);
+//   }
+// });
 
 // 투표 피드 작성
 router.post("/vote", authHandler, async (req, res, next) => {
   try {
     const { body } = req.body;
     const userId = req.user.id;
-
+    console.log(req.body);
     const newFeed = new Feed({
       isVote: true,
       body,
@@ -117,8 +174,8 @@ router.post("/profit", authHandler, async (req, res, next) => {
 // 피드 목록 가져오기
 router.get("/", authHandler, async (req, res, next) => {
   try {
-    const start = parseInt(req.query.start) || 0;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1; // 요청된 페이지 번호
+    const limit = parseInt(req.query.limit) || 10; // 페이지 당 피드 수
     const userId = req.user.id;
 
     const user = await User.findById(userId);
@@ -128,10 +185,13 @@ router.get("/", authHandler, async (req, res, next) => {
 
     friendIds.push(userId);
 
+    // 요청된 페이지의 시작 인덱스 계산
+    const startIndex = (page - 1) * limit;
+
     // 사용자와 친구들의 글을 가져옴
     const feeds = await Feed.find({ user: { $in: friendIds } })
       .sort({ createdAt: -1 })
-      .skip(start)
+      .skip(startIndex)
       .limit(limit)
       .populate({
         path: "user",
@@ -185,10 +245,20 @@ router.get("/user/:userId", authHandler, async (req, res, next) => {
     const userId = req.params.userId;
     const currentUserId = req.user.id;
 
-    const feeds = await Feed.find({ user: userId }).populate({
-      path: "user",
-      select: "nickname",
-    });
+    const page = parseInt(req.query.page) || 1; // 요청된 페이지 번호
+    const limit = parseInt(req.query.limit) || 10; // 페이지 당 피드 수
+
+    // 요청된 페이지의 시작 인덱스 계산
+    const startIndex = (page - 1) * limit;
+
+    const feeds = await Feed.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit)
+      .populate({
+        path: "user",
+        select: "nickname",
+      });
 
     const formattedFeeds = feeds.map((feed) => ({
       ...feed._doc,
