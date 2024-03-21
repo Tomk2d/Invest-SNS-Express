@@ -59,4 +59,13 @@ const addLikeStock = async (likeStock, userId) => {
   }
 };
 
-module.exports = { search, userSearch, addLikeStock };
+const getLikeStock = async (userId) => {
+  try {
+    const user = User.findById(userId);
+    return user.likeStock;
+  } catch (err) {
+    throw new ApplicationError(400, "관심 종목을 가져올 수 없습니다.");
+  }
+};
+
+module.exports = { search, userSearch, addLikeStock, getLikeStock };

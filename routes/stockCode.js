@@ -7,6 +7,7 @@ const {
   search,
   userSearch,
   addLikeStock,
+  getLikeStock,
 } = require("../service/stockCode/stockCode.js");
 
 router.get("/", (req, res, next) => {
@@ -100,6 +101,19 @@ router.post("/likeStock", authHandler, async (req, res, next) => {
     const likedStock = await addLikeStock(likeStock, userId);
 
     res.json(likedStock);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+router.get("/likeStock", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const likeStock = await getLikeStock(userId);
+
+    res.json(likeStock);
   } catch (err) {
     console.error(err);
     return next(err);
