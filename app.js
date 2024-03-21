@@ -63,15 +63,13 @@ app.use("/api/stockCode", stockCodeRouter);
 const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
-
-const askPriceRouter = require('./routes/askPrice');
-app.use("/api/askPrice", askPriceRouter);
-
+// const askPriceRouter = require('./routes/askPrice');
+// app.use("/api/askPrice", askPriceRouter);
 
 // 배치 작업 시행
-const cron = require('node-cron');
-const {getMinuteData, getDayData} = require('./service/batchData/batch_DB')
-const getToken = require('./service/verify/hantuToken');
+const cron = require("node-cron");
+const { getMinuteData, getDayData } = require("./service/batchData/batch_DB");
+const getToken = require("./service/verify/hantuToken");
 const { Http2ServerRequest } = require("http2");
 
 /*
@@ -84,7 +82,6 @@ cron.schedule('10 8 * * *',()=>{
 // 최초 1회 일 가격 업데이트.
 //let resultArray = getDayData();
 //console.log(resultArray);
-
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -101,6 +98,5 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-
 
 module.exports = app;
