@@ -196,16 +196,24 @@ router.get("/", authHandler, async (req, res, next) => {
       .populate({
         path: "user",
         select: "nickname",
+      })
+      .populate({
+        path: "comments",
+        select: "_id", // 댓글의 개수만 필요하므로 _id만 선택합니다.
       });
 
-    const formattedFeeds = feeds.map((feed) => ({
-      ...feed._doc,
-      createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
-      isLike: feed.like.includes(userId), // 내가 좋아요를 눌렀는지
-      like: feed.like.length, // 좋아요 개수
-      myVote: feed.myVote.includes(userId), // 내가 투표했는지
-    }));
+    const formattedFeeds = feeds.map((feed) => {
+      const formattedFeed = {
+        ...feed._doc,
+        createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
+        isLike: feed.like.includes(userId), // 내가 좋아요를 눌렀는지
+        like: feed.like.length, // 좋아요 개수
+        myVote: feed.myVote.includes(userId), // 내가 투표했는지
+      };
 
+      formattedFeed.commentsCount = feed.comments.length;
+      return formattedFeed;
+    });
     res.status(200).json(formattedFeeds);
   } catch (err) {
     console.error(err);

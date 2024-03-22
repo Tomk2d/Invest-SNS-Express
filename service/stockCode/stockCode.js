@@ -79,6 +79,7 @@ const getLikeStock = async (userId) => {
           code: stock.code,
           name: stock.name,
           market: marketName,
+          isLike: true,
         });
       }
     }
