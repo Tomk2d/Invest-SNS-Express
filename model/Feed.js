@@ -26,6 +26,12 @@ const feedSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+feedSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "feed",
+});
+
 const Feed = mongoose.model("Feed", feedSchema);
 
 module.exports = Feed;
