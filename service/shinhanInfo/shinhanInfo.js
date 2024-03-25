@@ -1,5 +1,6 @@
 const axios = require("axios");
 const dotenv = require("dotenv");
+const ApplicationError = require("../../util/error/applicationError");
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ const getStrategy = async () => {
 
     const strategy = response.data.dataBody.list;
 
-    const markeyIssue = strategy.find((item) => item.bbs_name === "마켓이슈");
+    const marketIssue = strategy.find((item) => item.bbs_name === "마켓이슈");
     const economicAnalysis = strategy.find(
       (item) => item.bbs_name === "경제분석"
     );
@@ -28,7 +29,7 @@ const getStrategy = async () => {
     );
 
     return {
-      markeyIssue,
+      marketIssue,
       economicAnalysis,
       shinhanDaily,
       corporateAnalysis,
