@@ -64,6 +64,13 @@ const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
 
+const askPriceRouter = require('./routes/askPrice');
+app.use("/api/askPrice", askPriceRouter);
+
+const chatBotRouter = require('./routes/chatBot');
+app.use("/api/chatbot", chatBotRouter);
+
+
 // 배치 작업 시행
 const cron = require("node-cron");
 const { getMinuteData, getDayData } = require("./service/batchData/batch_DB");
