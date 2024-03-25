@@ -59,4 +59,35 @@ const addLikeStock = async (likeStock, userId) => {
   }
 };
 
-module.exports = { search, userSearch, addLikeStock };
+const getLikeStock = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const likeStocks = user.likeStock;
+    const stockInfo = [];
+    for (const stockCode of likeStocks) {
+      const stock = await StockCode.findOne({ code: stockCode });
+
+      let marketName = "";
+      if (stock.market === "kospi") {
+        marketName = "코스피";
+      } else if (stock.market === "kosdaq") {
+        marketName = "코스닥";
+      }
+
+      if (stock) {
+        stockInfo.push({
+          code: stock.code,
+          name: stock.name,
+          market: marketName,
+          isLike: true,
+        });
+      }
+    }
+
+    return stockInfo;
+  } catch (err) {
+    throw new ApplicationError(400, "관심 종목을 가져올 수 없습니다.");
+  }
+};
+
+module.exports = { search, userSearch, addLikeStock, getLikeStock };
