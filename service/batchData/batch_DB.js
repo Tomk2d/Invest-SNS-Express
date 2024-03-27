@@ -21,32 +21,31 @@ async function getDayData() {
         const maxRequests = 5;
         let requestCounter = 0;
         let requestGroupCounter = 0;
-        let fileCount= 1;
+        let fileCount= 14;
 
         let resultArray = []
         let result = null
 
-        for (let i=0;i<codeArray.length;i++) {
+        for (let i=1300;i<codeArray.length;i++) {
             // 1초에 5개 이상의 요청이 발생하지 않도록 제어
             if (requestCounter >= maxRequests) {
                 await new Promise(resolve => setTimeout(resolve, 2000)); // 1.5초 대기
                 requestCounter = 0; // 카운터 초기화
             }
         
-            result = await processStockPrice('D', codeArray[i], start_date, end_date);
+            result = await processStockPrice('M', codeArray[i], start_date, end_date);
             let timestamp = new Date(Date.parse(result[0].date.slice(0, 4) + "-" + result[0].date.slice(4, 6) + "-" + result[0].date.slice(6, 8)));
-            console.log(timestamp);
             resultArray.push(result[0]);
 
-            //console.log(result);
+            console.log(result);
 
             // 100개 하고 1분 쉬기
             if (requestGroupCounter >= 99) { // 0부터 시작하므로 399가 400번째 요청
-                fs.writeFile(`/Users/shin-uijin/InvestSNS/Invest-SNS-Express/service/batchData/DayData/DayPrice${start_date}-${fileCount}.json`, JSON.stringify(resultArray, null, 2), 'utf8', (err) => {
+                fs.writeFile(`/Users/shin-uijin/InvestSNS/Invest-SNS-Express/service/batchData/MonthData/MonthPrice${start_date}-${fileCount}.json`, JSON.stringify(resultArray, null, 2), 'utf8', (err) => {
                     if (err) throw err;
                     console.log('The file has been saved!');
                 });
-                await new Promise(resolve2 => setTimeout(resolve2, 60000)); // 1분 쉬기
+                await new Promise(resolve2 => setTimeout(resolve2, 30000)); // 1분 쉬기
 
                 requestGroupCounter = 0;
                 fileCount++;
@@ -56,14 +55,12 @@ async function getDayData() {
             }
             requestCounter++; 
         }
-
         return resultArray;
 
     } catch (err) {
         console.error(err);
     }
 }
-
 
 async function getMinuteData(code){
     const headers = {       // 인증키 관련.
@@ -95,5 +92,6 @@ async function getMinuteData(code){
     });
     return result;
 }
+
 
 module.exports = {getMinuteData, getDayData};

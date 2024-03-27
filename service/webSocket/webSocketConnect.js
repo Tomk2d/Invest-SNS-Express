@@ -1,5 +1,8 @@
 const {Server} = require('socket.io');
 const WebSocket = require('ws');
+const EventEmitter = require('events');
+class WebSocketEventEmitter extends EventEmitter {}
+const stockEmitter = new WebSocketEventEmitter();
 require("dotenv").config();
 
 const io = new Server({
@@ -11,6 +14,11 @@ const io = new Server({
 
 const wsConnections = new Map(); // 코드별 WebSocket 연결 관리
 const ws = new WebSocket('ws://ops.koreainvestment.com:31000');
+
+stockEmitter.on('hoga', (data) => {
+    // 여기에 실행할 함수 적기.
+    console.log('외부에서 받은 새로운 데이터:', data);
+});
 
 ws.on('open', function open() {
     console.log('한국투자증권 소켓 연결 완료');
@@ -54,8 +62,8 @@ function webSocketConnect(code, ) {
                     sellAmount: priceArray.slice(23, 33),
                     buyAmount: priceArray.slice(33, 43),
                 };
-                //console.log(io.)
                 io.to(priceArray[0]).emit('askPrice', { message: response });
+                stockEmitter.emit('hoga', response);
             } else {
                 console.log("Unknown TRID:", trid);
             }
@@ -130,4 +138,4 @@ io.on('connection', (socket) => {
     });
 });
 
-module.exports = io;
+module.exports = io, stockEmitter;

@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('app-server:server');
 var http = require('http');
-const socket = require('../service/webSocket/webSocketConnect');
+const socket = require('../service/webSocket/webSocketConnect.js');
 
 
 /**

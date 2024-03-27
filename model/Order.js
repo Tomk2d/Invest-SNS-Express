@@ -1,22 +1,22 @@
 const mongoose = require("mongoose");
 
-const orderSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    ownedShare: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "StockCode",
-    },
-    price: Number, // 매도 가격
-    quantity: Number, // 매도 수량
-    orderType: String, // 지정가(limit), 시장가(market)
-    buyOrSell: String, // 매수, 매도
+// 체결된 주식 거래.
+const stockSchema = new mongoose.Schema({
+  ownedShare: String, // 주식코드
+  price: Number, // 구매 가격
+  quantity: Number, // 수량
+  buyOrSell: String, // 매수, 매도
+  time : Date,  //  거래 시간
+}); 
+
+// Order 스키마 정의
+const orderSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
-  { timestamps: true }
-);
+  stocks: [stockSchema] // 위의 stockSchema 사용
+});
 
 const Order = mongoose.model("Order", orderSchema);
 

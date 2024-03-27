@@ -64,12 +64,11 @@ const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
 
-const askPriceRouter = require('./routes/askPrice');
-app.use("/api/askPrice", askPriceRouter);
-
 const chatBotRouter = require('./routes/chatBot');
 app.use("/api/chatbot", chatBotRouter);
 
+const orderRouter = require('./routes/order');
+app.use("/api/order", orderRouter);
 
 // 배치 작업 시행
 const cron = require("node-cron");
@@ -84,9 +83,11 @@ cron.schedule('10 8 * * *',()=>{
 })
 */
 
+/*
 // 최초 1회 일 가격 업데이트.
-//let resultArray = getDayData();
-//console.log(resultArray);
+let resultArray = getDayData();
+console.log(resultArray);
+*/
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
