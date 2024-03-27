@@ -3,11 +3,13 @@ var router = express.Router();
 const Order = require('../model/Order.js');
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const { postOrder } = require("../service/order/order.js");
+const MyOrder = require('../service/order/myOrder.js');
 
 router.get('/', authHandler, async(req, res, next)=>{
     try{
         const userId = req.user.id;
-        const response = await Order.findOne({user:userId});
+        const myStock = await Order.findOne({user:userId});
+        const response = MyOrder(myStock);
         res.json(response);
     }catch(err){
         console.error(err);
@@ -25,14 +27,14 @@ router.post('/', authHandler, async (req, res, next) => {
 
         if (order) {
             // 기존에 거래한적 있는 유저이면, stocks 배열에 주식 정보 추가
-            order.stocks.push({ ownedShare, price, quantity, buyOrSell, Date });
+            order.stocks.push({ ownedShare, price, quantity, Date });
             await order.save();
             res.status(200).json({ message: "주식 정보가 추가되었습니다.", order });
         } else {
             // 기존에 거래한적 없는 유저이면, 새로운 Order 생성
             const newOrder = new Order({
                 user: userId,
-                stocks: [{ ownedShare, price, quantity, buyOrSell, Date }]
+                stocks: [{ ownedShare, price, quantity, Date }]
             });
             await newOrder.save();
             res.status(201).json({ message: "새로운 주문이 생성되었습니다.", newOrder });
@@ -45,11 +47,10 @@ router.post('/', authHandler, async (req, res, next) => {
 
 router.post("/limitOrder", authHandler, async (req, res, next) => {
   try {
-    const { ownedShare, buyOrSell, price, quantity } = req.body;
+    const { ownedShare, price, quantity } = req.body;
 
     const response = await postOrder(
       ownedShare,
-      buyOrSell,
       price,
       quantity,
       req.user.id,
@@ -60,6 +61,5 @@ router.post("/limitOrder", authHandler, async (req, res, next) => {
     return next(err);
   }
 });
-
 
 module.exports = router;
