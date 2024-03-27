@@ -3,7 +3,6 @@ const WebSocket = require('ws');
 const EventEmitter = require('events');
 class WebSocketEventEmitter extends EventEmitter {}
 const stockEmitter = new WebSocketEventEmitter();
-const processOrder = require('../redis/processOrder');
 require("dotenv").config();
 
 const io = new Server({
@@ -29,7 +28,6 @@ function webSocketConnect(code, ) {
     console.log('webSocketConnect', code)
     
     stockEmitter.on(code, (data)=>{
-        processOrder(data);
     })
     
     sendInitialMessages(code);
