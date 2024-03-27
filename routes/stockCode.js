@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
-const StockCode = require("../model/StockCode");
+var StockCode = require("../model/StockCode");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const {
   search,

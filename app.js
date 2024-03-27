@@ -27,12 +27,12 @@ app.use((req, res, next) => {
   next();
 });
 
-const { processOrder } = require("./service/redis/processOrder");
-processOrder({
-  code: "005930",
-  sellPrice: [75000],
-  buyPrice: [70000],
-});
+// const { processOrder } = require("./service/redis/processOrder");
+// processOrder({
+//   code: "005930",
+//   sellPrice: [75000],
+//   buyPrice: [70000],
+// });
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -78,7 +78,10 @@ app.use("/api/stockCode", stockCodeRouter);
 const shinhanInfokRouter = require("./routes/shinhanInfo");
 app.use("/api/shinhanInfo", shinhanInfokRouter);
 
-const orderRouter = require("./routes/order");
+const chatBotRouter = require('./routes/chatBot');
+app.use("/api/chatbot", chatBotRouter);
+
+const orderRouter = require('./routes/order');
 app.use("/api/order", orderRouter);
 
 // 배치 작업 시행
@@ -94,9 +97,11 @@ cron.schedule('10 8 * * *',()=>{
 })
 */
 
+/*
 // 최초 1회 일 가격 업데이트.
-//let resultArray = getDayData();
-//console.log(resultArray);
+let resultArray = getDayData();
+console.log(resultArray);
+*/
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
