@@ -81,6 +81,15 @@ const signUp = async (email, nickname, password) => {
   };
 };
 
+router.get('/search/:id',async(req, res, next)=>{
+  try{
+    const data = await User.findOne({nickname : req.params.id});
+    res.status(200).json(data);
+  }catch(err){
+    console.error(err);
+  }
+})
+
 const login = async (email, password) => {
   try {
     if (!validator.isEmail(email) || !(await isExistByEmail(email))) {

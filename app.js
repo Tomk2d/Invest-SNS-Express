@@ -20,19 +20,8 @@ mongoose.connect(MONGO_HOST, {
 var app = express();
 // view engine setup
 
-const { redisClient } = require("./redis_instance");
+// const { redisClient } = require("./redis_instance");
 
-app.use((req, res, next) => {
-  req.client = redisClient;
-  next();
-});
-
-// const { processOrder } = require("./service/redis/processOrder");
-// processOrder({
-//   code: "005930",
-//   sellPrice: [75000],
-//   buyPrice: [70000],
-// });
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
