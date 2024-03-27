@@ -17,7 +17,7 @@ const ws = new WebSocket('ws://ops.koreainvestment.com:31000');
 
 stockEmitter.on('hoga', (data) => {
     // 여기에 실행할 함수 적기.
-    console.log('외부에서 받은 새로운 데이터:', data);
+    //console.log('외부에서 받은 새로운 데이터:', data);
 });
 
 ws.on('open', function open() {
@@ -31,6 +31,9 @@ function webSocketConnect(code, ) {
     }
     console.log('webSocketConnect', code)
     
+    stockEmitter.on(code, (data)=>{
+        함수(data);
+    })
     
     sendInitialMessages(code);
 
@@ -63,7 +66,7 @@ function webSocketConnect(code, ) {
                     buyAmount: priceArray.slice(33, 43),
                 };
                 io.to(priceArray[0]).emit('askPrice', { message: response });
-                stockEmitter.emit('hoga', response);
+                stockEmitter.emit(priceArray[0], response);
             } else {
                 console.log("Unknown TRID:", trid);
             }
