@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const Order = require('../model/Order.js');
 const authHandler = require("../middleware/authHandler/authHandler.js");
+const { postOrder } = require("../service/order/order.js");
 
 router.get('/', authHandler, async(req, res, next)=>{
     try{
@@ -40,6 +41,24 @@ router.post('/', authHandler, async (req, res, next) => {
         console.error(err);
         return next(err);
     }
+});
+
+router.post("/limitOrder", authHandler, async (req, res, next) => {
+  try {
+    const { ownedShare, buyOrSell, price, quantity } = req.body;
+
+    const response = await postOrder(
+      ownedShare,
+      buyOrSell,
+      price,
+      quantity,
+      req.user.id,
+      req.client
+    );
+    res.json(response);
+  } catch (err) {
+    return next(err);
+  }
 });
 
 
