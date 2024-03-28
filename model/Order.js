@@ -5,8 +5,8 @@ const stockSchema = new mongoose.Schema({
   ownedShare: String, // 주식코드
   price: Number, // 구매 가격
   quantity: Number, // 수량
-  time : Date,  //  거래 시간
-}); 
+  time: Date, //  거래 시간
+});
 
 // Order 스키마 정의
 const orderSchema = new mongoose.Schema({
@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  stocks: [stockSchema] // 위의 stockSchema 사용
+  stocks: [stockSchema], // 위의 stockSchema 사용
 });
 
 const Order = mongoose.model("Order", orderSchema);
