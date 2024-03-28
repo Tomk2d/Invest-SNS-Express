@@ -1,9 +1,7 @@
 var express = require("express");
 var router = express.Router();
-const Order = require('../model/Order.js');
+const Order = require("../model/Order.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
-const { postOrder } = require("../service/order/order.js");
-const MyOrder = require('../service/order/myOrder.js');
 
 router.get('/myOrder', authHandler, async(req, res, next)=>{
     try{
@@ -17,13 +15,15 @@ router.get('/myOrder', authHandler, async(req, res, next)=>{
     }
 })
 
+
 router.post('/', authHandler, async (req, res, next) => {
     try {
         const userId = req.user.id; // 인증된 사용자의 ID를 가져옵니다. (인증 구현 방식에 따라 변경될 수 있습니다.)
         const { ownedShare, price, quantity, Date } = req.body; // 요청 본문에서 주식 정보를 추출합니다.
 
-        // 기존 Order 찾기
-        let order = await Order.findOne({ user: userId });
+
+    // 기존 Order 찾기
+    let order = await Order.findOne({ user: userId });
 
         if (order) {
             // 기존에 거래한적 있는 유저이면, stocks 배열에 주식 정보 추가
@@ -45,18 +45,29 @@ router.post('/', authHandler, async (req, res, next) => {
     }
 });
 
-router.post("/limitOrder", authHandler, async (req, res, next) => {
+router.post("/stock", authHandler, async (req, res, next) => {
+  // 매수, 매도 기능
   try {
     const { ownedShare, price, quantity } = req.body;
 
-    const response = await postOrder(
+    const savedOrder = await postOrder(
       ownedShare,
       price,
       quantity,
-      req.user.id,
-      req.client
+      buyOrSell,
+      req.user.id
     );
-    res.json(response);
+    res.json(savedOrder);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/myHistory/:code", authHandler, async (req, res, next) => {
+  try {
+    const { code } = req.params;
+    const myHistory = await getMyHistory(req.user.id, code);
+    res.json(myHistory);
   } catch (err) {
     return next(err);
   }
