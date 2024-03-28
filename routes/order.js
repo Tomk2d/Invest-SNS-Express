@@ -70,3 +70,5 @@ router.get("/myHistory/:code", authHandler, async (req, res, next) => {
     return next(err);
   }
 });
+
+module.exports = router;
