@@ -5,11 +5,11 @@ const authHandler = require("../middleware/authHandler/authHandler.js");
 const { postOrder } = require("../service/order/order.js");
 const MyOrder = require('../service/order/myOrder.js');
 
-router.get('/', authHandler, async(req, res, next)=>{
+router.get('/myOrder', authHandler, async(req, res, next)=>{
     try{
         const userId = req.user.id;
         const myStock = await Order.findOne({user:userId});
-        const response = MyOrder(myStock);
+        const response = await MyOrder(myStock);
         res.json(response);
     }catch(err){
         console.error(err);
@@ -20,7 +20,7 @@ router.get('/', authHandler, async(req, res, next)=>{
 router.post('/', authHandler, async (req, res, next) => {
     try {
         const userId = req.user.id; // 인증된 사용자의 ID를 가져옵니다. (인증 구현 방식에 따라 변경될 수 있습니다.)
-        const { ownedShare, price, quantity, buyOrSell, Date } = req.body; // 요청 본문에서 주식 정보를 추출합니다.
+        const { ownedShare, price, quantity, Date } = req.body; // 요청 본문에서 주식 정보를 추출합니다.
 
         // 기존 Order 찾기
         let order = await Order.findOne({ user: userId });
