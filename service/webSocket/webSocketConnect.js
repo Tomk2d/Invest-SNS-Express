@@ -16,11 +16,6 @@ const io = new Server({
 const wsConnections = new Map(); // 코드별 WebSocket 연결 관리
 const ws = new WebSocket("ws://ops.koreainvestment.com:31000");
 
-stockEmitter.on("hoga", (data) => {
-  processOrder(data);
-});
-
-
 ws.on("open", function open() {
   console.log("한국투자증권 소켓 연결 완료");
 });
@@ -33,7 +28,6 @@ function webSocketConnect(code) {
   console.log("webSocketConnect", code);
 
   stockEmitter.on(code, (data) => {
-    // 체결, 미체결
     processOrder(data);
   });
 
@@ -75,62 +69,19 @@ function webSocketConnect(code) {
     } else {
       console.log("Header:", messageString);
     }
-    console.log('webSocketConnect', code)
-    
-    stockEmitter.on(code, (data)=>{
-    })
-    
-    sendInitialMessages(code);
+  });
 
-    ws.on('message', function incoming(data) {
-        const messageString = data.toString();
-        if (messageString[0] === '0' || messageString[0] === '1') {
-            let messageArray = messageString.split('|');
-            let trid = messageArray[1];
-            let priceStr = messageArray[3];
+  ws.on("close", function close() {
+    console.log("웹소켓 연결 종료 for code", code);
+    wsConnections.delete(code);
+  });
 
-            if (trid === "H0STCNT0") {
-                let priceArray = priceStr.split('^');
-                let response = {
-                    code: priceArray[0],
-                    time: priceArray[1],
-                    close: priceArray[2],
-                    open: priceArray[7],
-                    high: priceArray[8],
-                    low: priceArray[9],
-                };
-                io.to(priceArray[0]).emit('nowPrice', { message: response });
-            } else if (trid === "H0STASP0") {
-                let priceArray = priceStr.split('^');
-                let response = {
-                    code: priceArray[0],
-                    time: priceArray[1],
-                    sellPrice: priceArray.slice(3, 13),
-                    buyPrice: priceArray.slice(13, 23),
-                    sellAmount: priceArray.slice(23, 33),
-                    buyAmount: priceArray.slice(33, 43),
-                };
-                io.to(priceArray[0]).emit('askPrice', { message: response });
-                stockEmitter.emit(priceArray[0], response);
-            } else {
-                console.log("Unknown TRID:", trid);
-            }
-        } else {
-            console.log('Header:', messageString);
-        }
-    });
+  ws.on("error", function error(err) {
+    console.error("웹소켓 연결 오류 for code", code, ":", err);
+    wsConnections.delete(code);
+  });
 
-    ws.on('close', function close() {
-        console.log('웹소켓 연결 종료 for code', code);
-        wsConnections.delete(code);
-    });
-
-    ws.on('error', function error(err) {
-        console.error('웹소켓 연결 오류 for code', code, ":", err);
-        wsConnections.delete(code);
-    });
-
-    wsConnections.set(code, ws);
+  wsConnections.set(code, ws);
 }
 
 function sendInitialMessages(code) {
