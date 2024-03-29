@@ -3,12 +3,13 @@ var router = express.Router();
 const Order = require("../model/Holding.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const {buyOrSellOrder} = require('../service/order/order.js');
+const MyOrder = require('../service/order/myOrder.js');
 
 router.get('/myOrder', authHandler, async(req, res, next)=>{
     try{
         const userId = req.user.id;
-        const myStock = await Order.findOne({user:userId});
-        const response = await MyOrder(myStock);
+        const myStocks = await Order.findOne({user:userId});
+        const response = await MyOrder(myStocks);
         res.json(response);
     }catch(err){
         console.error(err);
