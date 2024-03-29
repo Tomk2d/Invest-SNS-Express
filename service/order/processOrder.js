@@ -1,11 +1,10 @@
 const { promisify } = require("util");
-const Order = require("../../model/Order");
+const Holding = require("../../model/Holding");
 const UnfilledOrder = require("../../model/UnfilledOrder");
 const ReservedOrder = require('../../model/ReservedOrder');
 const CompleteOrder = require('../../model/CompleteOrder');
 
 async function processOrder(data) {
-  console.log(data);
   try {   // data : {code: "", sellPrice: [], buyPrice: []}
     // 소켓 데이터에서 코드 불러오기.
     const code = data.code;
