@@ -2,12 +2,12 @@ const axios = require('axios');
 require("dotenv").config();
 
 
-async function MyOrder(myStock){
+async function MyOrder(myStocks){
     resultArray = []
-    if (myStock === null || myStock === undefined){
+    if (myStocks=== null || myStocks === undefined){
         return 
     }
-    const stocks = myStock.stocks;
+    const stocks = myStocks.stocks;
     const headers = {
     'authorization' : `Bearer ${process.env.VTS_TOKEN}`,
     'appkey': process.env.VTS_APPKEY,
@@ -22,14 +22,16 @@ async function MyOrder(myStock){
             await new Promise(resolve => setTimeout(resolve, 1000));
             cnt =0;
         }
-        const nowData = await axios.get(`https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-price?fid_cond_mrkt_div_code=J&fid_input_iscd=${stock.ownedShare}`, { headers: headers });
+        const nowData = await axios.get(`https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-price?fid_cond_mrkt_div_code=J&fid_input_iscd=${stock.code}`, { headers: headers });
         const nowPrice = nowData.data.output.stck_prpr;
+        console.log(nowData.data);
         const upDown = ((nowPrice - stock.price)/ stock.price)*100;
+        const whole = (nowPrice*stock.quantity)
         resultArray.push({
-            code : stock.ownedShare,
+            code : stock.code,
             amount: stock.quantity,
             price : nowPrice,
-            whole : (nowPrice*stock.quantity),
+            whole : whole,
             upDown : upDown
         })
     }
