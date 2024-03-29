@@ -1,34 +1,24 @@
 const ApplicationError = require("../../util/error/applicationError");
 const UnfilledOrder = require("../../model/UnfilledOrder");
 const OrderHistory = require("../../model/OrderHistory");
+const ReservedOrder = require('../../model/ReservedOrder');
 
-const postOrder = async (ownedShare, price, quantity, buyOrSell, user) => {
+async function buyOrSellOrder(user, ownedShare, price, quantity, buyOrSell){
   try {
     const currentTime = new Date();
 
-    const order1 = new OrderHistory({
+    const reserveOrder = new ReservedOrder({   // 미체결 등록.
       user: user,
-      ownedShare: ownedShare,
+      buyOrSell: buyOrSell,
+      ownedShare: ownedShare,  // 주식 코드
       price: price,
       quantity: quantity,
-      buyOrSell: buyOrSell,
       time: currentTime,
     });
 
-    const savedOrder1 = await order1.save();
+    const savedOrder = await reserveOrder.save();
 
-    const order2 = new UnfilledOrder({
-      user: user,
-      orderHistoryId: savedOrder1._id,
-      ownedShare: ownedShare,
-      price: price,
-      quantity: quantity,
-      buyOrSell: buyOrSell,
-      time: currentTime,
-    });
-    const savedOrder2 = await order2.save();
-
-    return { order: savedOrder1 };
+    return { order: savedOrder };
   } catch (err) {
     throw new ApplicationError(400, "주문을 저장할 수 없습니다");
   }
@@ -79,4 +69,4 @@ const getMyHistory = async (user, code) => {
   }
 };
 
-module.exports = { postOrder, getMyHistory };
+module.exports = { buyOrSellOrder, getMyHistory };
