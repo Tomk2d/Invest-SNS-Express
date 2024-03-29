@@ -10,6 +10,7 @@ router.get('/myOrder', authHandler, async(req, res, next)=>{
         const userId = req.user.id;
         const myStocks = await Order.findOne({user:userId});
         const response = await MyOrder(myStocks);
+        console.log(userId);
         res.json(response);
     }catch(err){
         console.error(err);

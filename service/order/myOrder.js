@@ -3,11 +3,15 @@ require("dotenv").config();
 
 
 async function MyOrder(myStocks){
-    resultArray = []
+    resultArray = {
+        myMoney : [],
+        mystocks : []
+    }
     if (myStocks=== null || myStocks === undefined){
         return 
     }
     const stocks = myStocks.stocks;
+    const cash = myStocks.balance;
     const headers = {
     'authorization' : `Bearer ${process.env.VTS_TOKEN}`,
     'appkey': process.env.VTS_APPKEY,
@@ -16,26 +20,47 @@ async function MyOrder(myStocks){
     }
     let cnt = 0;
     let max_cnt = 4;
+    let whole_money = cash;     // 현금 + 보유 주식 가격
+    let whole_stock_price = 0;  // 보유주식 평가금액 합.
+    let whole_up_down = 0;      // 보유주식 수익금액 합.
+    let whole_buy_price = 0;   // 내가 투자한 금액 합.
+
     for (let stock of stocks){
         cnt++;
         if (cnt > max_cnt){
             await new Promise(resolve => setTimeout(resolve, 1000));
             cnt =0;
         }
+        const buyPrice = stock.price;
         const nowData = await axios.get(`https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-price?fid_cond_mrkt_div_code=J&fid_input_iscd=${stock.code}`, { headers: headers });
         const nowPrice = nowData.data.output.stck_prpr;
-        console.log(nowData.data);
-        const upDown = ((nowPrice - stock.price)/ stock.price)*100;
-        const whole = (nowPrice*stock.quantity)
-        resultArray.push({
+        const upDownRate = ((nowPrice - buyPrice)/ buyPrice)*100;
+        const whole = (nowPrice*stock.quantity);    //  종목별 가격합.
+        const upDown = nowPrice - buyPrice
+        whole_money += whole;
+        whole_stock_price += whole;
+        whole_up_down += (upDown*stock.quantity);
+        whole_buy_price += (buyPrice*stock.quantity);
+
+        resultArray.mystocks.push({
             code : stock.code,
             amount: stock.quantity,
-            price : nowPrice,
+            price : parseInt(nowPrice),
             whole : whole,
-            upDown : upDown
+            upDownRate : upDownRate
         })
+
     }
+    resultArray.myMoney.push({
+        wholeMoney : whole_money,       // 총 평가자산
+        cash : cash,                    // 보유 현금
+        wholeStockPrice : whole_stock_price,    // 보유주식 전체 평가금
+        wholeUpDown : whole_up_down,            // 보유주식 전체 수익금
+        wholeUpDownRate : ((whole_stock_price - whole_buy_price)/whole_buy_price) * 100
+    })
     return resultArray;
 }
+
+
 
 module.exports = MyOrder;
