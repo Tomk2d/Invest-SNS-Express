@@ -6,7 +6,7 @@ const bcrypt = require("bcrypt");
 const { generateUserJwt } = require("../util/jwt/jwtUtil.js");
 const User = require("../model/User.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
-const search = require('../service/user/userService.js');
+
 dotenv.config();
 
 // 사용자 정보
@@ -55,6 +55,10 @@ router.post("/login", async (req, res, next) => {
 // 로그아웃
 router.post("/logout", authHandler, async (req, res) => {
   res.clearCookie("authToken");
+  res.cookie("token", "", {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  });
   res.status(200).send({ success: true, message: "Logout Success" });
 });
 
@@ -80,15 +84,6 @@ const signUp = async (email, nickname, password) => {
     createdAt: result.createdAt,
   };
 };
-
-router.post('/search',async(req, res, next)=>{
-  try{
-    const data = await search(req.body.nickname);
-    res.status(200).json(data);
-  }catch(err){
-    console.error(err);
-  }
-})
 
 const login = async (email, password) => {
   try {
