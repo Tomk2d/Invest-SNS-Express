@@ -63,6 +63,33 @@ router.post(
   }
 );
 
+// 글 삭제
+router.delete("/:feedId", authHandler, async (req, res, next) => {
+  try {
+    const feedId = req.params.feedId;
+    const userId = req.user.id;
+
+    // 글 작성자와 현재 사용자가 동일한지 확인
+    const feed = await Feed.findById(feedId);
+    if (!feed) {
+      return res.status(404).json({ message: "글을 찾을 수 없습니다." });
+    }
+    console.log(feed.user.toString());
+    console.log(userId);
+    if (feed.user.toString() !== userId) {
+      return res.status(403).json({ message: "글을 삭제할 권한이 없습니다." });
+    }
+
+    // 글 삭제
+    await Feed.findByIdAndDelete(feedId);
+
+    res.status(200).json({ message: "글이 성공적으로 삭제되었습니다." });
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
 // 글 피드 작성
 // router.post("/", authHandler, async (req, res, next) => {
 //   try {
@@ -247,12 +274,15 @@ router.get("/:feedId", authHandler, async (req, res, next) => {
   }
 });
 
-// 사용자 피드 가져오기
+// 나의 피드 가져오기
 router.get("/user/:userId", authHandler, async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const currentUserId = req.user.id;
 
+    if (userId === "-1") {
+      return res.status(200).json("");
+    }
     const page = parseInt(req.query.page) || 1; // 요청된 페이지 번호
     const limit = parseInt(req.query.limit) || 10; // 페이지 당 피드 수
 
@@ -266,17 +296,86 @@ router.get("/user/:userId", authHandler, async (req, res, next) => {
       .populate({
         path: "user",
         select: "nickname",
+      })
+      .populate({
+        path: "comments",
+        select: "_id", // 댓글의 개수만 필요하므로 _id만 선택합니다.
       });
 
-    const formattedFeeds = feeds.map((feed) => ({
-      ...feed._doc,
-      createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
-      isLike: feed.like.includes(currentUserId),
-      like: feed.like.length,
-      myVote: feed.myVote.includes(userId), // 내가 투표했는지
-    }));
+    const formattedFeeds = feeds.map((feed) => {
+      const formattedFeed = {
+        ...feed._doc,
+        createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
+        isLike: feed.like.includes(currentUserId), // 내가 좋아요를 눌렀는지
+        like: feed.like.length, // 좋아요 개수
+        myVote: feed.myVote.includes(userId), // 내가 투표했는지
+      };
 
+      formattedFeed.commentsCount = feed.comments.length;
+      return formattedFeed;
+    });
     res.status(200).json(formattedFeeds);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 사용자 피드 가져오기
+router.get("/anotherUser/:userId", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    const currentUserId = req.user.id;
+
+    if (userId === "-1") {
+      return res.status(200).json("");
+    }
+    const page = parseInt(req.query.page) || 1; // 요청된 페이지 번호
+    const limit = parseInt(req.query.limit) || 10; // 페이지 당 피드 수
+
+    // 요청된 페이지의 시작 인덱스 계산
+    const startIndex = (page - 1) * limit;
+
+    const feeds = await Feed.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit)
+      .populate({
+        path: "user",
+        select: "nickname",
+      })
+      .populate({
+        path: "comments",
+        select: "_id", // 댓글의 개수만 필요하므로 _id만 선택합니다.
+      });
+
+    const formattedFeeds = feeds.map((feed) => {
+      const formattedFeed = {
+        ...feed._doc,
+        createdAt: moment(feed.createdAt).format("YYYY-MM-DD HH:mm"),
+        isLike: feed.like.includes(currentUserId), // 내가 좋아요를 눌렀는지
+        like: feed.like.length, // 좋아요 개수
+        myVote: feed.myVote.includes(userId), // 내가 투표했는지
+      };
+
+      formattedFeed.commentsCount = feed.comments.length;
+      return formattedFeed;
+    });
+    res.status(200).json(formattedFeeds);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+// 내 게시글 수
+router.get("/user/:userId/post-count", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+
+    const postCount = await Feed.countDocuments({ user: userId });
+
+    res.status(200).json({ postCount });
   } catch (err) {
     console.error(err);
     return next(err);

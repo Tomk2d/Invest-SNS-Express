@@ -3,10 +3,16 @@ const User = require("../../model/User");
 
 const search = async (searchQuery) => {
   try {
+    if (searchQuery === "") {
+      return [];
+    }
+    if (searchQuery === "@") {
+      const allData = await User.find().lean();
+      return allData;
+    }
+
     const searchData = await User.find({
-      $or: [
-        { nickname: { $regex: searchQuery, $options: "i" } },
-      ],
+      $or: [{ nickname: { $regex: searchQuery, $options: "i" } }],
     }).lean();
 
     return searchData;

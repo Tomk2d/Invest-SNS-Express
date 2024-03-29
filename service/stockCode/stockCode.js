@@ -90,4 +90,32 @@ const getLikeStock = async (userId) => {
   }
 };
 
-module.exports = { search, userSearch, addLikeStock, getLikeStock };
+const getLikeStockArr = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const likeStocks = user.likeStock;
+
+    // 병렬로 주식 코드를 조회하여 배열로 반환
+    const stockCodes = await Promise.all(
+      likeStocks.map(async (stockCode) => {
+        const stock = await StockCode.findOne({ code: stockCode });
+        return stock ? stock.code : null;
+      })
+    );
+
+    // null이 아닌 값들만 필터링
+    const filteredStockCodes = stockCodes.filter(Boolean);
+
+    return filteredStockCodes;
+  } catch (err) {
+    throw new ApplicationError(400, "관심 종목을 가져올 수 없습니다.");
+  }
+};
+
+module.exports = {
+  search,
+  userSearch,
+  addLikeStock,
+  getLikeStock,
+  getLikeStockArr,
+};

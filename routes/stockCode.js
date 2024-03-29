@@ -8,6 +8,7 @@ const {
   userSearch,
   addLikeStock,
   getLikeStock,
+  getLikeStockArr,
 } = require("../service/stockCode/stockCode.js");
 
 router.get("/", (req, res, next) => {
@@ -74,10 +75,9 @@ router.post("/search", async (req, res, next) => {
 });
 
 // 로그인 한 사용자 검색
-router.post("/userSearch", authHandler, async (req, res, next) => {
+router.post("/userSearch", async (req, res, next) => {
   try {
-    const { searchQuery } = req.body;
-    const userId = req.user.id;
+    const { searchQuery, userId } = req.body;
 
     if (searchQuery === "") {
       return res.json([]);
@@ -93,10 +93,9 @@ router.post("/userSearch", authHandler, async (req, res, next) => {
 });
 
 // 관심 종목 추가
-router.post("/likeStock", authHandler, async (req, res, next) => {
+router.post("/likeStock", async (req, res, next) => {
   try {
-    const { likeStock } = req.body;
-    const userId = req.user.id;
+    const { likeStock, userId } = req.body;
 
     const likedStock = await addLikeStock(likeStock, userId);
 
@@ -107,11 +106,24 @@ router.post("/likeStock", authHandler, async (req, res, next) => {
   }
 });
 
-router.get("/likeStock", authHandler, async (req, res, next) => {
+router.get("/likeStock/:userId", async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.params.userId;
 
     const likeStock = await getLikeStock(userId);
+
+    res.json(likeStock);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
+
+router.get("/likeStockArr/:userId", async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+
+    const likeStock = await getLikeStockArr(userId);
 
     res.json(likeStock);
   } catch (err) {
