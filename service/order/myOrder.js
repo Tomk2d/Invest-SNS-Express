@@ -2,9 +2,21 @@ const axios = require("axios");
 require("dotenv").config();
 
 async function MyOrder(myStocks) {
+  function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   if (!myStocks || !myStocks.stocks || myStocks.stocks.length === 0) {
     return {
-      myMoney: [],
+      myMoney: [
+        {
+          wholeMoney: numberWithCommas(100000000),
+          cash: numberWithCommas(100000000),
+          wholeStockPrice: 0,
+          wholeUpDown: 0,
+          wholeUpDownRate: 0,
+        },
+      ],
       mystocks: [],
     };
   }
@@ -52,19 +64,21 @@ async function MyOrder(myStocks) {
       code: stock.code,
       name: stock.name,
       amount: stock.quantity,
-      price: parseInt(nowPrice),
-      whole: whole,
-      upDownRate: upDownRate,
+      price: numberWithCommas(parseInt(nowPrice)),
+      whole: numberWithCommas(whole),
+      upDownRate: numberWithCommas(upDownRate),
     });
   }
   resultArray.myMoney.push({
-    wholeMoney: whole_money, // 총 평가자산
-    cash: cash, // 보유 현금
-    wholeStockPrice: whole_stock_price, // 보유주식 전체 평가금
-    wholeUpDown: whole_up_down, // 보유주식 전체 수익금
-    wholeUpDownRate:
-      ((whole_stock_price - whole_buy_price) / whole_buy_price) * 100,
+    wholeMoney: numberWithCommas(whole_money), // 총 평가자산
+    cash: numberWithCommas(cash), // 보유 현금
+    wholeStockPrice: numberWithCommas(whole_stock_price), // 보유주식 전체 평가금
+    wholeUpDown: numberWithCommas(whole_up_down), // 보유주식 전체 수익금
+    wholeUpDownRate: numberWithCommas(
+      ((whole_stock_price - whole_buy_price) / whole_buy_price) * 100
+    ),
   });
+
   return resultArray;
 }
 
