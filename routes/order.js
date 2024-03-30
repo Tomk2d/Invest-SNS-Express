@@ -2,27 +2,26 @@ var express = require("express");
 var router = express.Router();
 const Order = require("../model/Holding.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
-const {buyOrSellOrder} = require('../service/order/order.js');
-const MyOrder = require('../service/order/myOrder.js');
+const { buyOrSellOrder, getMyHistory } = require("../service/order/order.js");
+const MyOrder = require("../service/order/myOrder.js");
 
-router.get('/myOrder', authHandler, async(req, res, next)=>{
-    try{
-        const userId = req.user.id;
-        const myStocks = await Order.findOne({user:userId});
-        const response = await MyOrder(myStocks);
-        console.log(userId);
-        res.json(response);
-    }catch(err){
-        console.error(err);
-        return next(err);
-    }
-})
+router.get("/myOrder", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const myStocks = await Order.findOne({ user: userId });
+    const response = await MyOrder(myStocks);
+    console.log(userId);
+    res.json(response);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+});
 
-router.post('/', authHandler, async (req, res, next) => {
-    try {
-        const userId = req.user.id; // 인증된 사용자의 ID를 가져옵니다. (인증 구현 방식에 따라 변경될 수 있습니다.)
-        const { ownedShare, price, quantity, Date } = req.body; // 요청 본문에서 주식 정보를 추출합니다.
-
+router.post("/", authHandler, async (req, res, next) => {
+  try {
+    const userId = req.user.id; // 인증된 사용자의 ID를 가져옵니다. (인증 구현 방식에 따라 변경될 수 있습니다.)
+    const { ownedShare, price, quantity, Date } = req.body; // 요청 본문에서 주식 정보를 추출합니다.
 
     // 기존 Order 찾기
     let order = await Order.findOne({ user: userId });
@@ -54,7 +53,13 @@ router.post("/buyOrSell", authHandler, async (req, res, next) => {
   try {
     const { ownedShare, price, quantity, buyOrSell } = req.body;
     // 미체결 등록
-    const reserveData = await buyOrSellOrder(req.user.id, ownedShare, price, quantity, buyOrSell);
+    const reserveData = await buyOrSellOrder(
+      req.user.id,
+      ownedShare,
+      price,
+      quantity,
+      buyOrSell
+    );
     res.json(reserveData);
   } catch (err) {
     return next(err);
