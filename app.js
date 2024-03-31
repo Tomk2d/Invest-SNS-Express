@@ -41,7 +41,7 @@ app.use("/api/kosdaqCode", kosdaqCodeRouter);
 
 var userRouter = require("./routes/user");
 app.use("/api/user", userRouter);
-app.use("/api/stock", stockRouter);
+// app.use("/api/stock", stockRouter);
 
 const feedRouter = require("./routes/feed");
 app.use("/api/feed", feedRouter);
@@ -69,6 +69,9 @@ app.use("/api/chatbot", chatBotRouter);
 
 const orderRouter = require("./routes/order");
 app.use("/api/order", orderRouter);
+
+const holdingRouter = require("./routes/holding");
+app.use("/api/holding", holdingRouter);
 
 // 배치 작업 시행
 const cron = require("node-cron");

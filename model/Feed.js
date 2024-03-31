@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const orderSchema = new mongoose.Schema({
+  code: String, // 주식코드
+  name: String, // 주식이름
+  buyOrSell: String, // 매수, 매도
+  quantity: Number, // 수량
+});
+
 const feedSchema = new mongoose.Schema(
   {
     user: {
@@ -13,10 +20,7 @@ const feedSchema = new mongoose.Schema(
     },
     myVote: [mongoose.Schema.Types.ObjectId],
     isOrder: { type: Boolean, default: false },
-    order: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
-    },
+    order: orderSchema,
     isProfit: { type: Boolean, default: false },
     profit: Number,
     body: String,
