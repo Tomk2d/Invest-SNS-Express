@@ -3,6 +3,7 @@ var router = express.Router();
 const Order = require("../model/Holding.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const { buyOrSellOrder, getMyHistory } = require("../service/order/order.js");
+const MyOrder = require("../service/order/myOrder.js");
 
 router.get("/myOrder", authHandler, async (req, res, next) => {
   try {
