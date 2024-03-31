@@ -8,9 +8,8 @@ const MyOrder = require("../service/order/myOrder.js");
 router.get("/myOrder", authHandler, async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const myStocks = await Order.findOne({ user: userId });
-    const response = await MyOrder(myStocks);
-    console.log(userId);
+    const myStock = await Order.findOne({ user: userId });
+    const response = await MyOrder(myStock);
     res.json(response);
   } catch (err) {
     console.error(err);
@@ -48,13 +47,14 @@ router.post("/", authHandler, async (req, res, next) => {
   }
 });
 
-router.post("/buyOrSell", authHandler, async (req, res, next) => {
+router.post("/buyOrSell/:userId", async (req, res, next) => {
   // 매수 기능
   try {
+    const { userId } = req.params;
     const { ownedShare, price, quantity, buyOrSell } = req.body;
     // 미체결 등록
     const reserveData = await buyOrSellOrder(
-      req.user.id,
+      userId,
       ownedShare,
       price,
       quantity,
@@ -66,10 +66,10 @@ router.post("/buyOrSell", authHandler, async (req, res, next) => {
   }
 });
 
-router.get("/myHistory/:code", authHandler, async (req, res, next) => {
+router.get("/myHistory/:userId/:code", async (req, res, next) => {
   try {
-    const { code } = req.params;
-    const myHistory = await getMyHistory(req.user.id, code);
+    const { userId, code } = req.params;
+    const myHistory = await getMyHistory(userId, code);
     res.json(myHistory);
   } catch (err) {
     return next(err);

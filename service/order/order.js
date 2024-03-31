@@ -1,16 +1,17 @@
 const ApplicationError = require("../../util/error/applicationError");
-const UnfilledOrder = require("../../model/UnfilledOrder");
-const OrderHistory = require("../../model/OrderHistory");
-const ReservedOrder = require('../../model/ReservedOrder');
+const CompleteOrder = require("../../model/CompleteOrder");
+const ReservedOrder = require("../../model/ReservedOrder");
+const moment = require("moment");
 
-async function buyOrSellOrder(user, ownedShare, price, quantity, buyOrSell){
+async function buyOrSellOrder(user, ownedShare, price, quantity, buyOrSell) {
   try {
     const currentTime = new Date();
 
-    const reserveOrder = new ReservedOrder({   // 미체결 등록.
+    const reserveOrder = new ReservedOrder({
+      // 미체결 등록.
       user: user,
       buyOrSell: buyOrSell,
-      ownedShare: ownedShare,  // 주식 코드
+      ownedShare: ownedShare, // 주식 코드
       price: price,
       quantity: quantity,
       time: currentTime,
@@ -22,50 +23,51 @@ async function buyOrSellOrder(user, ownedShare, price, quantity, buyOrSell){
   } catch (err) {
     throw new ApplicationError(400, "주문을 저장할 수 없습니다");
   }
-};
+}
 
 const getMyHistory = async (user, code) => {
   try {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const formattedDate = `${year}-${month}-${day}`;
-
-    const formatTime = (time) => {
-      const formattedTime = new Date(time).toLocaleTimeString("ko-KR", {
-        hour12: false,
-        timeZone: "Asia/Seoul", // 한국 시간대로 설정
-      });
-      return formattedTime;
-    };
-
-    const unfilledOrders = await UnfilledOrder.find({
+    const reservedOrders = await ReservedOrder.find({
       user,
       ownedShare: code,
-      time: { $gte: formattedDate },
     });
-    const formattedUnfilledOrders = unfilledOrders.map((order) => ({
-      ...order._doc,
-      time: formatTime(order.time),
-    }));
 
-    const orderHistory = await OrderHistory.find({
+    let formattedReservedOrders = [];
+    if (reservedOrders) {
+      formattedReservedOrders = reservedOrders.map((order) => ({
+        ...order._doc,
+        time: moment(order.time).format("YYYY-MM-DD HH:mm"),
+      }));
+      formattedReservedOrders.sort(
+        (a, b) => new Date(b.time) - new Date(a.time)
+      );
+    }
+
+    let formattedCompleteOrders = [];
+    const completeUserOrders = await CompleteOrder.findOne({
       user,
-      ownedShare: code,
-      time: { $gte: formattedDate },
     });
-    const formattedOrderHistory = orderHistory.map((order) => ({
-      ...order._doc,
-      time: formatTime(order.time),
-    }));
+
+    if (completeUserOrders) {
+      const completeOrders = completeUserOrders.stocks.filter(
+        (order) => order.ownedShare === code
+      );
+
+      formattedCompleteOrders = completeOrders.map((order) => ({
+        ...order._doc,
+        time: moment(order.time).format("YYYY-MM-DD HH:mm"),
+      }));
+      formattedCompleteOrders.sort(
+        (a, b) => new Date(b.time) - new Date(a.time)
+      );
+    }
 
     return {
-      unfilledOrders: formattedUnfilledOrders,
-      orderHistory: formattedOrderHistory,
+      reservedHistory: formattedReservedOrders,
+      completedHistory: formattedCompleteOrders,
     };
   } catch (err) {
-    throw new ApplicationError(400, "주문을 저장할 수 없습니다");
+    throw new ApplicationError(400, "주문을 검색할 수 없습니다");
   }
 };
 

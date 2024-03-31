@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const { generateUserJwt } = require("../util/jwt/jwtUtil.js");
 const User = require("../model/User.js");
+const Holding = require("../model/Holding.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 
 dotenv.config();
@@ -75,13 +76,18 @@ const signUp = async (email, nickname, password) => {
     nickname: nickname,
     password: hashedPassword,
   });
+  const userResult = await user.save();
 
-  const result = await user.save();
+  const holding = new Holding({
+    user: userResult._id,
+    stocks: [],
+    balance: 100000000,
+  });
+  const holdingResult = await holding.save();
+
   return {
-    id: result._id,
-    email: result.email,
-    nickname: result.nickname,
-    createdAt: result.createdAt,
+    userResult,
+    holdingResult,
   };
 };
 

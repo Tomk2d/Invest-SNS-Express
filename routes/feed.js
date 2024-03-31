@@ -157,14 +157,21 @@ router.post("/voted", authHandler, async (req, res, next) => {
 });
 
 // 매도/매수 피드 작성
-router.post("/order", authHandler, async (req, res, next) => {
+router.post("/order/:userId", authHandler, async (req, res, next) => {
   try {
-    const { orderId } = req.body;
-    const userId = req.user.id;
+    const { code, name, buyOrSell, quantity } = req.body;
+    const { userId } = req.params;
+
+    const newOrder = {
+      code,
+      name,
+      buyOrSell,
+      quantity,
+    };
 
     const newFeed = new Feed({
       isOrder: true,
-      order: orderId,
+      order: newOrder,
       user: userId,
     });
 
