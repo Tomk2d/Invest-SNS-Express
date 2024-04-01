@@ -3,48 +3,20 @@ var router = express.Router();
 const Feed = require("../model/Feed.js");
 const User = require("../model/User.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
-const formatDate = require("../util/dateFormat/dateFormat.js");
 const moment = require("moment");
-const path = require("path");
-
-// const bodyParser = require("body-parser");
-const multer = require("multer");
-
-// 이미지 파일을 저장할 디렉토리 설정
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "data/uploads/"); // 파일을 저장할 디렉토리 지정
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, uniqueSuffix + ext);
-  },
-});
-
-// 업로드된 파일 필터링 (이미지 파일만 허용)
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true); // 이미지 파일인 경우 허용
-  } else {
-    cb(new Error("Only image files are allowed!"), false); // 이미지 파일이 아닌 경우 거부
-  }
-};
-
-// multer 미들웨어 생성
-const upload = multer({ storage: storage, fileFilter: fileFilter });
+const imageUploader = require("../util/imageUploader");
 
 // 글 피드 작성
 router.post(
   "/",
   authHandler,
-  upload.single("file"), // "photo" 필드에 단일 파일 업로드를 처리하는 multer 미들웨어
+  imageUploader.single("file"),
   async (req, res, next) => {
     try {
       console.log(JSON.stringify(req.body));
       const body = req.body.body;
       const userId = req.user.id;
-      const photoUrl = req.file ? req.file.path : null; // 이미지 파일이 전송되었을 때만 URL 저장
+      const photoUrl = req.file ? req.file.location : null;
       console.log(req.file);
       console.log(req.body.body);
       const newFeed = new Feed({
@@ -89,27 +61,6 @@ router.delete("/:feedId", authHandler, async (req, res, next) => {
     return next(err);
   }
 });
-
-// 글 피드 작성
-// router.post("/", authHandler, async (req, res, next) => {
-//   try {
-//     const { body, photoUrl } = req.body;
-//     const userId = req.user.id;
-
-//     const newFeed = new Feed({
-//       body,
-//       photoUrl,
-//       user: userId,
-//     });
-
-//     const savedFeed = await newFeed.save();
-
-//     res.status(200).json(savedFeed);
-//   } catch (err) {
-//     console.error(err);
-//     return next(err);
-//   }
-// });
 
 // 투표 피드 작성
 router.post("/vote", authHandler, async (req, res, next) => {
