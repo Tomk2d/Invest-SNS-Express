@@ -53,8 +53,8 @@ async function processOrder(data) {
               await newOrder.save();
             }
 
-            await ReservedOrder.findByIdAndDelete(order._id);
-            await updateBuyHolding(order.user, code, buyPrice, order.quantity);
+            const deleted = await ReservedOrder.findByIdAndDelete(order._id);
+            await updateBuyHolding(deleted.user, deleted.ownedShare, deleted.buyPrice, deleted.quantity);
           }
         } else if (buyOrSell === "sell") {
           //  팔때.
