@@ -38,7 +38,9 @@ async function updateSellHolding(user, code, price, quantity) {
       return;
     }
 
-    const stockIndex = holding.stocks.findIndex((stock) => stock.code === code);
+    const stockIndex = await holding.stocks.findIndex(
+      (stock) => stock.code === code
+    );
     if (stockIndex === -1) {
       return;
     }

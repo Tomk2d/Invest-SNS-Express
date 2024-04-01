@@ -27,8 +27,8 @@ function webSocketConnect(code) {
   }
   console.log("webSocketConnect", code);
 
-  stockEmitter.on(code, (data) => {
-    processOrder(data);
+  stockEmitter.on(code, async (data) => {
+    await processOrder(data);
   });
 
   sendInitialMessages(code);
