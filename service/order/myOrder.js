@@ -1,4 +1,5 @@
 const axios = require("axios");
+const StockCode = require("../../model/StockCode");
 require("dotenv").config();
 
 async function MyOrder(myStocks) {
@@ -59,14 +60,14 @@ async function MyOrder(myStocks) {
     whole_stock_price += whole;
     whole_up_down += upDown * stock.quantity;
     whole_buy_price += buyPrice * stock.quantity;
-
+    const stockObject = await StockCode.findOne({ code: stock.code });
     resultArray.mystocks.push({
       code: stock.code,
-      name: stock.name,
+      name: stockObject.name,
       amount: stock.quantity,
       price: numberWithCommas(parseInt(nowPrice)),
       whole: numberWithCommas(whole),
-      upDownRate: numberWithCommas(upDownRate),
+      upDownRate: numberWithCommas(upDownRate.toFixed(2)),
     });
   }
   resultArray.myMoney.push({
@@ -75,7 +76,9 @@ async function MyOrder(myStocks) {
     wholeStockPrice: numberWithCommas(whole_stock_price), // 보유주식 전체 평가금
     wholeUpDown: numberWithCommas(whole_up_down), // 보유주식 전체 수익금
     wholeUpDownRate: numberWithCommas(
-      ((whole_stock_price - whole_buy_price) / whole_buy_price) * 100
+      (((whole_stock_price - whole_buy_price) / whole_buy_price) * 100).toFixed(
+        2
+      )
     ),
   });
 
