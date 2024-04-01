@@ -4,6 +4,8 @@ const Feed = require("../model/Feed.js");
 const User = require("../model/User.js");
 const authHandler = require("../middleware/authHandler/authHandler.js");
 const moment = require("moment");
+require("moment-timezone");
+moment.tz.setDefault("Asia/Seoul");
 const imageUploader = require("../util/imageUploader");
 
 // 글 피드 작성
