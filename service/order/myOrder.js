@@ -49,7 +49,7 @@ async function MyOrder(myStocks) {
     }
     const buyPrice = stock.price;
     const nowData = await axios.get(
-      `https://openapivts.koreainvestment.com:29443/uapi/domestic-stock/v1/quotations/inquire-price?fid_cond_mrkt_div_code=J&fid_input_iscd=${stock.code}`,
+      `https://openapi.koreainvestment.com:9443/uapi/domestic-stock/v1/quotations/inquire-price?fid_cond_mrkt_div_code=J&fid_input_iscd=${stock.code}`,
       { headers: headers }
     );
     const nowPrice = nowData.data.output.stck_prpr;

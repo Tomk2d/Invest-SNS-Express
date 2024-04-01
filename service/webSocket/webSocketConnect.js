@@ -14,7 +14,7 @@ const io = new Server({
 });
 
 const wsConnections = new Map(); // 코드별 WebSocket 연결 관리
-const ws = new WebSocket("ws://ops.koreainvestment.com:31000");
+const ws = new WebSocket("ws://ops.koreainvestment.com:21000");
 
 ws.on("open", function open() {
   console.log("한국투자증권 소켓 연결 완료");
