@@ -25,6 +25,7 @@ async function processOrder(data) {
               data.sellPrice[0] === price ? price : data.sellPrice[0];
             // 체결 완료에 유저아이디 찾기.
             let orderUser = await CompleteOrder.findOne({ user: order.user });
+
             // 유저 아이디로 체결 스키마에 추가.
             if (orderUser) {
               orderUser.stocks.push({
@@ -34,6 +35,7 @@ async function processOrder(data) {
                 quantity: order.quantity,
                 time: order.time,
               });
+              await orderUser.save();
             } else {
               // 한번도 거래 안해본 애들.
               const newOrder = new CompleteOrder({
@@ -51,11 +53,8 @@ async function processOrder(data) {
               await newOrder.save();
             }
 
-            // 계산 로직 추가
-
-            // 미체결에서 제거.
             await ReservedOrder.findByIdAndDelete(order._id);
-            updateBuyHolding(order.user, code, buyPrice, order.quantity);
+            await updateBuyHolding(order.user, code, buyPrice, order.quantity);
           }
         } else if (buyOrSell === "sell") {
           //  팔때.
@@ -77,24 +76,15 @@ async function processOrder(data) {
                 quantity: order.quantity,
                 time: order.time,
               });
-            } else {
-              // 한번도 거래 안해본 애들.
-              const newOrder = new CompleteOrder({
-                user: order.user,
-                stocks: [
-                  {
-                    buyOrSell: buyOrSell,
-                    ownedShare: code,
-                    price: sellPrice,
-                    quantity: order.quantity,
-                    time: order.time,
-                  },
-                ],
-              });
-              await newOrder.save();
+              await orderUser.save();
+              await ReservedOrder.findByIdAndDelete(order._id);
+              await updateSellHolding(
+                order.user,
+                code,
+                sellPrice,
+                order.quantity
+              );
             }
-            await ReservedOrder.findByIdAndDelete(order._id);
-            updateSellHolding(order.user, code, sellPrice, order.quantity);
           }
         }
       }

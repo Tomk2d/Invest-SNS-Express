@@ -5,6 +5,7 @@ const moment = require("moment");
 
 async function buyOrSellOrder(user, ownedShare, price, quantity, buyOrSell) {
   try {
+    console.log("***");
     const currentTime = new Date();
 
     const reserveOrder = new ReservedOrder({
@@ -36,10 +37,10 @@ const getMyHistory = async (user, code) => {
     if (reservedOrders) {
       formattedReservedOrders = reservedOrders.map((order) => ({
         ...order._doc,
-        time: moment(order.time).format("YYYY-MM-DD HH:mm"),
+        time: moment(order.time).format("YYYY-MM-DD HH:mm:ss"),
       }));
       formattedReservedOrders.sort(
-        (a, b) => new Date(b.time) - new Date(a.time)
+        (a, b) => new Date(a.time) - new Date(b.time)
       );
     }
 
@@ -55,7 +56,7 @@ const getMyHistory = async (user, code) => {
 
       formattedCompleteOrders = completeOrders.map((order) => ({
         ...order._doc,
-        time: moment(order.time).format("YYYY-MM-DD HH:mm"),
+        time: moment(order.time).format("YYYY-MM-DD HH:mm:ss"),
       }));
       formattedCompleteOrders.sort(
         (a, b) => new Date(b.time) - new Date(a.time)

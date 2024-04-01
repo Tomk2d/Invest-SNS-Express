@@ -16,7 +16,8 @@ const getHoldingQuantity = async (userId, code) => {
   try {
     const holding = await Holding.findOne({ user: userId });
     const stock = holding.stocks.find((stock) => stock.code === code);
-    return stock.quantity;
+    if (!stock) return 0;
+    else return stock.quantity;
   } catch (err) {
     throw new ApplicationError(400, "보유 주식 주수 가져올 수 없습니다.");
   }
