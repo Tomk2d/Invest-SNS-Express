@@ -3,7 +3,7 @@ const Holding = require("../../model/Holding");
 async function updateBuyHolding(user, code, price, quantity) {
   try {
     let holding = await Holding.findOne({ user: user });
-
+    console.log("holding : ", holding);
     const stockIndex = holding.stocks.findIndex((stock) => stock.code === code);
     if (stockIndex === -1) {
       holding.stocks.push({
