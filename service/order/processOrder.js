@@ -21,8 +21,8 @@ async function processOrder(data) {
           if (data.sellPrice[0] <= price) {
             // 호가로 거래되는 가격이 내가 사려고 하는거보다 낮을때. 즉 내가 비싸게 거래햐려고 할때.
             // 가격이 같으면 내가 설정한 가격으로 거래. 더 싸면 싼가격으로 사짐.
-            const buyPrice =
-              data.sellPrice[0] === price ? price : data.sellPrice[0];
+            const buyPrice = data.sellPrice[0] === price ? price : data.sellPrice[0];
+
             // 체결 완료에 유저아이디 찾기.
             let orderUser = await CompleteOrder.findOne({ user: order.user });
 
@@ -33,6 +33,9 @@ async function processOrder(data) {
                 ownedShare: code,
                 price: buyPrice,
                 quantity: order.quantity,
+
+                time: order.time,
+
               });
               await orderUser.save();
             } else {
@@ -52,9 +55,12 @@ async function processOrder(data) {
               await newOrder.save();
             }
 
-            const deleted = await ReservedOrder.findByIdAndDelete(order._id);
-            await updateBuyHolding(deleted.user, deleted.ownedShare, deleted.buyPrice, deleted.quantity);
-          }
+            let deleted = await ReservedOrder.findByIdAndDelete(order._id);
+	    if (deleted){
+	      deleted = null;
+	      await updateBuyHolding(order.user, code, buyPrice, order.quantity);
+	    }
+	  }
         } else if (buyOrSell === "sell") {
           //  팔때.
           if (data.buyPrice[0] >= price) {
@@ -73,15 +79,16 @@ async function processOrder(data) {
                 ownedShare: code,
                 price: sellPrice,
                 quantity: order.quantity,
+
+                time: order.time,
+
               });
               await orderUser.save();
-              await ReservedOrder.findByIdAndDelete(order._id);
-              await updateSellHolding(
-                order.user,
-                code,
-                sellPrice,
-                order.quantity
-              );
+              let deleted = await ReservedOrder.findByIdAndDelete(order._id);
+              if (deleted){
+	        deleted = null;
+		await updateSellHolding(order.user,code,sellPrice,order.quantity);
+	      }
             }
           }
         }
