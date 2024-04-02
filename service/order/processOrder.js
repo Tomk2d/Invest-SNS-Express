@@ -23,7 +23,6 @@ async function processOrder(data) {
             // 가격이 같으면 내가 설정한 가격으로 거래. 더 싸면 싼가격으로 사짐.
             const buyPrice =
               data.sellPrice[0] === price ? price : data.sellPrice[0];
-            const currentTime = new Date();
             // 체결 완료에 유저아이디 찾기.
             let orderUser = await CompleteOrder.findOne({ user: order.user });
 
@@ -34,7 +33,6 @@ async function processOrder(data) {
                 ownedShare: code,
                 price: buyPrice,
                 quantity: order.quantity,
-                time: currentTime,
               });
               await orderUser.save();
             } else {
@@ -65,7 +63,6 @@ async function processOrder(data) {
             // 내가 팔려고 하는 가격보다 호가가 비싸면 호가로 설정. 같으면 내 가격 설정.
             const sellPrice =
               data.buyPrice[0] === price ? price : data.buyPrice[0];
-            const currentTime = new Date();
             // 체결을 해본적 있는 유저 있는지.
             const orderUser = await CompleteOrder.findOne({ user: order.user });
 
@@ -76,7 +73,6 @@ async function processOrder(data) {
                 ownedShare: code,
                 price: sellPrice,
                 quantity: order.quantity,
-                time: currentTime,
               });
               await orderUser.save();
               await ReservedOrder.findByIdAndDelete(order._id);
