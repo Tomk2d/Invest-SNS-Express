@@ -4,37 +4,35 @@
 
 > 주최 : 신한투자증권
 > <br/><br/>
-> 주제 : 개인화된 금융 서비스를 제공하기 위한 클라우드 MSA 환경 구축 및 서비스 개발
+> 주제 : 투자 전략 공유 SNS 및 모의투자 플랫폼
 > <br/><br/>
-> 서비스 : 웹앱
+> 서비스 : 웹 서비스
 > <br/><br/>
-> 성과 : 최우수 프로젝트 수상
 
 <br/>
 <br/>
 
 ## Team. DonTouch
-| 신의진 | 박유진 | 이한슬 |
-|:----:|:----:|:-----:|
-|<img src = "https://avatars.githubusercontent.com/Tomk2d" width=150px>|<img src = "https://avatars.githubusercontent.com/yjp8842" width=150px>|<img src = "https://avatars.githubusercontent.com/eehanseul" width=150px>|
-| 백엔드 테크리더 | 프론트엔드 테크리더 | PM |
+| 신의진 | 박유진 |
+|:----:|:----:|
+|<img src = "https://avatars.githubusercontent.com/Tomk2d" width=150px>|<img src = "https://avatars.githubusercontent.com/yjp8842" width=150px>|
+| 백엔드 테크리더 | 프론트엔드 테크리더 |
 
 
-| 허상진 | 박진언 | 이승택 |
-|:----:|:----:|:----:|
-|<img src = "https://avatars.githubusercontent.com/bookeers" width=150px>|<img src = "https://avatars.githubusercontent.com/parkjineon" width=150px>|<img src = "https://avatars.githubusercontent.com/seungtoctoc" width=150px>|
-| 서기 | 팀원 | 팀원 |
+| 허상진 | 박진언 |
+|:----:|:----:|
+|<img src = "https://avatars.githubusercontent.com/chaeheonjeong" width=150px>|<img src = "https://avatars.githubusercontent.com/eunxoo" width=150px>|
+| 백엔드 팀원 | 프론트엔드 팀원 |
 
 <br/>
 <br/>
 
 ## My Role (신의진)
 * 백엔드 테크리더 및 프로젝트 리딩
-* 배당주, 개별주식, 부동산, 에너지 거래체결
+* 주식 개별 종목 시장가/지정가 매매 체결
 * 실시간 소켓 통신
-* 비동기 객체 통신
-* MSA 설계 및 AWS 인프라 설계
-* 배포
+* 챗봇 모델 학습 및 서비스 구현
+* AWS 인프라 설계 및 배포
 
 <br/>
 <br/>
@@ -50,24 +48,19 @@
 
 ## About
 
-
-donTouch 는 투자 상품 추천 및 모의투자, 배당 일정 관리 등의 __통합형 자산관리 서비스__ 입니다. <br /> <br />
-' _제 2의 월급 만들기_ ' 라는 목표로 유저를 개인화하고 배당주, p2p 상품 등의 조합을 추천합니다. <br /> 
-유저의 __마이데이터(투자 성향, 총 자산, 투자 자산, 보유 주식)__ 를 통하여 유저를 개인화하고, <br />
-이에 적합한 상품들을 조합하여 __모든 월에 수익을 창출__ 할 수 있게 합니다. <br /> <br />
-
 Stock Mate 는 전략형 __투자 정보 공유__ 및 __모의투자 서비스__ 입니다. <br /> <br />
-차트/보조지표를 활용하여 __나만의 투자 전략__을 설립하고, <br /> 
-__SNS 기능__을 활용하여 __자신의 투자 전략__ 및 현황을 __공유__ 합니다. <br /> 
+
+차트/보조지표를 활용하여 __나만의 투자 전략__ 을 설립하고, <br /> 
+__SNS 기능__ 을 활용하여 __자신의 투자 전략__ 및 현황을 __공유__ 합니다. <br /> 
 실시간 모의투자는 실제 주식 현장과 동일하게 진행됩니다. <br />  <br /> 
 
 ### 메인 기능
-* 주식 개별 종목 매매(한국/미국)
-* 배당주 조합 추천 및 조합 생성 구매
-* 부동산 p2p 종목 매매 및 추천
-* 에너지 p2p 종목 매매 및 추천
-* 캘린더를 통한 배당 일정 관리
-* 마이데이터를 활용한 개인화 및 통합적 자산 관리
+* 실시간 주식 개별 종목 매매
+* 보조 지표를 활용한 투자 전략 수립
+* 투자 SNS 기능
+* 챗 메이트 - 챗봇
+* 종목 분석 및 인기 주식
+* 마이페이지 - 자산 관리
 
 
 <br />
