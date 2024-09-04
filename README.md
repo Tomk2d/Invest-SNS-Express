@@ -17,16 +17,11 @@
 <br/>
 
 ## Team. Stock Mate
-| 신의진 | 박유진 |
-|:----:|:----:|
-|<img src = "https://avatars.githubusercontent.com/Tomk2d" width=150px>|<img src = "https://avatars.githubusercontent.com/yjp8842" width=150px>|
-| 백엔드 테크리더 | 프론트엔드 테크리더 |
+| 신의진 | 박유진 | 정채헌 | 양은수 |
+|:----:|:----:|:----:|:----:|
+|<img src = "https://avatars.githubusercontent.com/Tomk2d" width=150px>|<img src = "https://avatars.githubusercontent.com/yjp8842" width=150px>|<img src = "https://avatars.githubusercontent.com/chaeheonjeong" width=150px>|<img src = "https://avatars.githubusercontent.com/eunxoo" width=150px>|
+| 백엔드 테크리더 | 프론트엔드 테크리더 | 백엔드 팀원 | 프론트엔드 팀원 |
 
-
-| 허상진 | 박진언 |
-|:----:|:----:|
-|<img src = "https://avatars.githubusercontent.com/chaeheonjeong" width=150px>|<img src = "https://avatars.githubusercontent.com/eunxoo" width=150px>|
-| 백엔드 팀원 | 프론트엔드 팀원 |
 
 <br/>
 <br/>
