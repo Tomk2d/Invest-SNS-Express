@@ -1,5 +1,7 @@
 # 함께 만들어 가는 - Stock Mate
 
+<img src = "https://github.com/user-attachments/assets/b0bc5436-f2b3-41a2-8a50-81fd771bb12f">
+
 <br/>
 
 > 주최 : 신한투자증권
