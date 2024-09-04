@@ -1,4 +1,4 @@
-# 한 발 앞선 생각 - Don Touch
+# 함께 만들어 가는 - Stock Mate
 
 <br/>
 
@@ -12,7 +12,7 @@
 <br/>
 <br/>
 
-## Team. DonTouch
+## Team. Stock Mate
 | 신의진 | 박유진 |
 |:----:|:----:|
 |<img src = "https://avatars.githubusercontent.com/Tomk2d" width=150px>|<img src = "https://avatars.githubusercontent.com/yjp8842" width=150px>|
